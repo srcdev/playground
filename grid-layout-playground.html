@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>title</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./assets/styles/index.css" />
+
+    <style>
+      @layer page {
+        .layout {
+          --_outline: 1px solid light-dark(hsl(0, 29%, 3%), hsl(0, 0%, 92%));
+          --_color: light-dark(hsl(0, 29%, 3%), hsl(0, 0%, 92%));
+          --_gap: 12px;
+
+          display: grid;
+          gap: var(--_gap);
+          width: 100%;
+
+          grid-template-columns: 1fr;
+          grid-template-areas:
+            'slot1'
+            'slot2'
+            'slot3'
+            'slot4';
+
+          @container (width >= 768px) {
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-areas:
+              'slot1 slot1'
+              'slot2 slot3'
+              'slot4 slot4';
+          }
+
+          @container (width >= 1024px) {
+            grid-template-columns: 1fr minmax(460px, 33%);
+            grid-template-areas:
+              'slot1 slot2'
+              'slot3 slot2'
+              'slot4 slot4';
+          }
+
+          @container (width >= 1280px) {
+            grid-template-columns: 1fr minmax(460px, 33%);
+            grid-template-areas:
+              'slot1 slot2'
+              'slot3 slot2'
+              'slot4 slot4';
+          }
+
+          @container (width >= 1900px) {
+            grid-template-columns: 1fr minmax(460px, 33%) minmax(300px, 25%);
+            grid-template-areas:
+              'slot1 slot2 slot3'
+              'slot4 slot4 slot4';
+          }
+
+          [class^='slot'] {
+            outline: var(--_outline);
+          }
+
+          .slot-1 {
+            display: grid;
+            grid-area: slot1;
+          }
+
+          .slot-2 {
+            display: grid;
+            grid-area: slot2;
+          }
+
+          .slot-3 {
+            display: grid;
+            grid-area: slot3;
+          }
+
+          .slot-4 {
+            display: grid;
+            grid-area: slot4;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="config" id="nav"></nav>
+    <main id="main" data-canvas="tablet" class="container">
+      <section class="layout">
+        <div class="slot-1">
+          <h2>Slot 1</h2>
+          <p class="desc-mobile">Column 1/ Row 1</p>
+          <p class="desc-tablet-small">Columns 1 & 2/ Row 1</p>
+          <p class="desc-tablet-large">Columns 1/ Row 1</p>
+          <p class="desc-laptop">Columns 1/ Row 1</p>
+          <p class="desc-desktop">Columns 1/ Row 1</p>
+        </div>
+
+        <div class="slot-2">
+          <h2>Slot 2</h2>
+          <p class="desc-mobile">Column 1/ Row 2</p>
+          <p class="desc-tablet-small">Columns 1/ Row 2</p>
+          <p class="desc-tablet-large">Columns 2/ Row 1 & 2</p>
+          <p class="desc-laptop">Columns 2/ Row 1 & 2</p>
+          <p class="desc-desktop">Columns 2/ Row 1</p>
+        </div>
+
+        <div class="slot-3">
+          <h2>Slot 3</h2>
+          <p class="desc-mobile">Column 1/ Row 3</p>
+          <p class="desc-tablet-small">Columns 2/ Row 2</p>
+          <p class="desc-tablet-large">Columns 1/ Row 2</p>
+          <p class="desc-laptop">Columns 1/ Row 2</p>
+          <p class="desc-desktop">Columns 3/ Row 1</p>
+        </div>
+
+        <div class="slot-4">
+          <h2>Slot 4</h2>
+          <p class="desc-mobile">Column 1/ Row 4</p>
+          <p class="desc-tablet-small">Columns 1 & 2/ Row 3</p>
+          <p class="desc-tablet-large">Columns 1 & 2/ Row 3</p>
+          <p class="desc-laptop">Columns 1 & 2/ Row 3</p>
+          <p class="desc-desktop">Columns 1, 2 & 3/ Row 2</p>
+        </div>
+      </section>
+    </main>
+  </body>
+  <script src="./assets/scripts/container-size-switcher.js"></script>
+</html>

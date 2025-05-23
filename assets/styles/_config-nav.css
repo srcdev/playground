@@ -1,0 +1,41 @@
+@layer navConfig {
+  html {
+    body * {
+      font-family:
+        futura-pt, Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro,
+        sans-serif;
+      box-sizing: border-box;
+    }
+
+    nav.config {
+      display: flex;
+      gap: 12px;
+
+      fieldset {
+        margin: 0 0 24px 0;
+        padding: 12px;
+
+        display: inline-flex;
+        gap: 12px;
+        align-items: center;
+
+        legend {
+          font-weight: bolder;
+        }
+
+        .currentCanvas,
+        .currentAlignment {
+          text-transform: capitalize;
+          font-weight: bolder;
+        }
+      }
+
+      select {
+        &,
+        &::picker(select) {
+          appearance: base-select;
+        }
+      }
+    }
+  }
+}

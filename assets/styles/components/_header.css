@@ -1,0 +1,121 @@
+@layer page {
+  header {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 24px;
+
+    h1 {
+      text-wrap-mode: nowrap;
+    }
+
+    .navigation {
+      display: grid;
+      grid-template-areas: 'navStack';
+
+      margin: 12px;
+      border-radius: 8px;
+      background-color: #efefef05;
+      border: 1px solid #efefef75;
+      padding: 12px;
+
+      .main-navigation {
+        grid-area: navStack;
+        display: flex;
+        flex-wrap: nowrap;
+        flex-grow: 1;
+        justify-content: space-between;
+        gap: 12px;
+
+        margin-inline-end: calc(var(--_secondary-nav-width) + var(--_nav-items-gap));
+        overflow-x: hidden;
+
+        outline: 0px solid green;
+
+        .main-navigation__list {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 12px;
+
+          li {
+            a {
+              display: block;
+              text-wrap-mode: nowrap;
+            }
+          }
+        }
+      }
+
+      .secondary-navigation {
+        grid-area: navStack;
+        justify-self: end;
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 12px;
+        justify-content: space-between;
+
+        outline: 0px solid yellow;
+
+        .overflow-navigation {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          position: relative;
+          cursor: pointer;
+
+          summary {
+            text-align: right;
+            list-style: none;
+          }
+          summary::-webkit-details-marker,
+          summary::marker {
+            display: none;
+          }
+
+          .overflow-navigation__list {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: #ffffff;
+            border: 1px solid #efefef75;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 0;
+            z-index: 999;
+            min-width: 120px;
+
+            li {
+              margin-bottom: 8px;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              a {
+                display: block;
+                text-wrap-mode: nowrap;
+              }
+            }
+          }
+        }
+
+        .hiddene {
+          visibility: hidden;
+          opacity: 0;
+        }
+
+        .secondary-navigation__list {
+          display: flex;
+          flex-wrap: nowrap;
+          gap: 12px;
+
+          li {
+            a {
+              display: block;
+              text-wrap-mode: nowrap;
+            }
+          }
+        }
+      }
+    }
+  }
+}

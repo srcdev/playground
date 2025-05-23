@@ -1,0 +1,66 @@
+@layer setup {
+  html {
+    color-scheme: light dark;
+
+    body * {
+      font-family:
+        futura-pt, Seravek, 'Gill Sans Nova', Ubuntu, Calibri, 'DejaVu Sans', source-sans-pro,
+        sans-serif;
+      box-sizing: border-box;
+    }
+
+    main {
+      outline: 1px dashed transparent;
+
+      &.alignCenter {
+        margin-inline: auto;
+      }
+
+      [class^='slot'] {
+        [class^='desc'] {
+          display: none;
+        }
+      }
+
+      &[data-canvas='mobile'] {
+        max-width: 412px;
+
+        .desc-mobile {
+          display: block;
+        }
+      }
+
+      &[data-canvas='tablet-small'] {
+        max-width: 768px;
+
+        .desc-tablet-small {
+          display: block;
+        }
+      }
+
+      &[data-canvas='tablet-large'] {
+        max-width: 1024px;
+
+        .desc-tablet-large {
+          display: block;
+        }
+      }
+
+      &[data-canvas='laptop'] {
+        max-width: 1280px;
+
+        .desc-laptop {
+          display: block;
+        }
+      }
+
+      &[data-canvas='desktop'] {
+        max-width: 100%;
+
+        .desc-desktop {
+          display: block;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "playground-vite-html",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:md": "markdownlint '**/*.md' --fix",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.4.0",
+    "markdownlint-cli": "^0.44.0",
+    "prettier": "^3.5.3",
+    "vite": "^3.1.0"
+  }
+}

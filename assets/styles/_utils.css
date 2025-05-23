@@ -1,0 +1,17 @@
+@layer utils {
+  .container {
+    container-type: inline-size;
+  }
+  .show {
+    display: block;
+  }
+  .hide {
+    display: none;
+  }
+  .hidden {
+    visibility: hidden;
+  }
+  .visible {
+    visibility: visible;
+  }
+}
