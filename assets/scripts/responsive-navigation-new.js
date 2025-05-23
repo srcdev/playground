@@ -9,8 +9,47 @@ document.addEventListener('DOMContentLoaded', function () {
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
 
+  const navigationElementsPositionArray = {
+    1: {
+      1: {
+        left: 0,
+        right: 0,
+        visible: true,
+      },
+      2: {
+        left: 0,
+        right: 0,
+        visible: true,
+      },
+      3: {
+        left: 0,
+        right: 0,
+        visible: true,
+      },
+    },
+    2: {
+      1: {
+        left: 0,
+        right: 0,
+        visible: true,
+      },
+      2: {
+        left: 0,
+        right: 0,
+        visible: true,
+      },
+    },
+  };
+
+  let previousSecondNavListElemRightEdge = Math.floor(
+    secondNavListElem.getBoundingClientRect().right,
+  );
+
   let isShrinking = false;
   let isExpanding = false;
+
+  let firstNavInOverflow = false;
+  let secondNavInOverflow = false;
 
   // Exit if required elements don't exist
   if (
@@ -31,22 +70,42 @@ document.addEventListener('DOMContentLoaded', function () {
     item.cloneNode(true),
   );
 
-  console.log('originalFirstListItems');
-  console.log(originalFirstListItems);
-
   const originalSecondListItems = Array.from(secondNavListElem.children).map((item) =>
     item.cloneNode(true),
   );
-
-  console.log('originalSecondListItems');
-  console.log(originalSecondListItems);
 
   function setInitialItems() {
     mainNavigationElem.style.setProperty('--_nav-items-gap', `${navItemsGap}px`);
   }
 
+  // Move last item from originalSecondListItems to first item in overflowList
+  function moveLastItemToOverflow() {
+    console.log('moveLastItemToOverflow()');
+
+    const lastItem = originalSecondListItems.pop();
+    if (lastItem) {
+      const overflowListElem = document.getElementById('overflowList');
+      overflowListElem.appendChild(lastItem.cloneNode(true));
+
+      // now delete the last item from the secondNavListElem
+      const lastItemInSecondNavList = secondNavListElem.lastElementChild;
+      if (lastItemInSecondNavList) {
+        secondNavListElem.removeChild(lastItemInSecondNavList);
+      }
+    }
+  }
+
   function handleOverflow() {
     console.clear();
+
+    console.log('originalFirstListItems');
+    console.log(originalFirstListItems);
+    console.log('- - - - - - - - - - - -');
+    console.log('originalSecondListItems');
+    console.log(originalSecondListItems);
+    console.log('- - - - - - - - - - - -');
+    console.log('previousSecondNavListElemRightEdge');
+    console.log(previousSecondNavListElemRightEdge);
 
     // Set width of secondary nav
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
@@ -60,6 +119,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const mainNavRectRightEdge = Math.floor(mainNavElem.getBoundingClientRect().right);
     // console.log('mainNavRectRightEdge', mainNavRectRightEdge);
 
+    // Get position of firstNavListElem right edge
+    const firstNavListElemRightEdge = Math.floor(firstNavListElem.getBoundingClientRect().right);
+    console.log('firstNavListElemRightEdge', firstNavListElemRightEdge);
+
     // Get position of secondNavListElem right edge
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
     console.log('secondNavListElemRightEdge', secondNavListElemRightEdge);
@@ -68,11 +131,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + navItemsGap;
     console.log('overlapPosition', overlapPosition);
 
+    isShrinking = secondNavListElemRightEdge < previousSecondNavListElemRightEdge;
+    isExpanding = !isShrinking;
+    console.log(`isShrinking: ${isShrinking} | isExpanding: ${isExpanding}`);
+
+    firstNavInOverflow = firstNavListElemRightEdge + (navItemsGap - 2) > secondaryNavLeftEdge;
+    secondNavInOverflow = secondNavListElemRightEdge + (navItemsGap - 2) > secondaryNavLeftEdge;
+    console.log(
+      `firstNavInOverflow: ${firstNavInOverflow} | secondNavInOverflow: ${secondNavInOverflow}`,
+    );
+
     if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
       console.log('secondaryNavElem overlaps mainNavElem');
+
+      if (isShrinking && secondNavInOverflow) {
+        moveLastItemToOverflow();
+      }
     } else {
       console.log('secondaryNavElem does not overlap mainNavElem');
     }
+
+    previousSecondNavListElemRightEdge = secondNavListElemRightEdge;
   }
 
   // Run on initial load and resize
@@ -80,9 +159,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Handle window resize with requestAnimationFrame for performance
   window.addEventListener('resize', () => {
-    requestAnimationFrame(() => {
-      handleOverflow();
-    });
+    // requestAnimationFrame(() => {
+    handleOverflow();
+    // });
   });
 
   // Run once on DOMContentLoaded too
