@@ -65,7 +65,10 @@
           summary {
             text-align: right;
             list-style: none;
+            padding-inline: 5px;
+            border: 1px solid #efefef75;
           }
+
           summary::-webkit-details-marker,
           summary::marker {
             display: none;
