@@ -268,8 +268,7 @@ document.addEventListener('DOMContentLoaded', function () {
     setPreviousSecondaryNavLeftEdge();
   }, 50);
 
-  let isShrinking = false;
-  let isExpanding = false;
+  let isCollapsing = false;
 
   function setInitialItems() {
     mainNavigationElem.style.setProperty('--_nav-items-gap', `${navItemsGap}px`);
@@ -301,11 +300,11 @@ document.addEventListener('DOMContentLoaded', function () {
     // Set position when secondaryNav overlaps mainNav
     const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + navItemsGap;
 
-    isShrinking = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
-    isExpanding = !isShrinking;
+    isCollapsing = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
+    isExpanding = !isCollapsing;
 
     if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
-      if (isShrinking) {
+      if (isCollapsing) {
         isInLastVisibleRange(secondaryNavLeftEdge);
       } else {
         showIfBeyondFirstHiddenRange(secondaryNavLeftEdge);
@@ -313,23 +312,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     debouncedPrevMeasurement();
-    displayConfiguration();
-  }
-
-  function displayConfiguration() {
-    // Format JSON with 2 spaces indentation for better readability
-    document.getElementById('mainNavArray').innerHTML = JSON.stringify(
-      navigationElementsPositionArray,
-      null,
-      2,
-    );
-
-    document.getElementById('isShrinking').innerHTML = isShrinking;
-    document.getElementById('isExpanding').innerHTML = isExpanding;
-    document.getElementById('mainNavBoundryEnd').innerHTML = mainNavBoundryEnd;
-    document.getElementById('secondaryNavLeftEdge').innerHTML = secondaryNavLeftEdge;
-    document.getElementById('previousSecondaryNavLeftEdge').innerHTML =
-      previousSecondaryNavLeftEdge;
   }
 
   // Handle overflow nav details toggle
