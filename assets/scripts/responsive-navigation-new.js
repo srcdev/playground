@@ -332,6 +332,43 @@ document.addEventListener('DOMContentLoaded', function () {
       previousSecondaryNavLeftEdge;
   }
 
+  // Handle overflow nav details toggle
+  if (overflowDetails) {
+    overflowDetails.addEventListener('toggle', () => {
+      if (overflowDetails.open) {
+        document.addEventListener('click', onClickOutside);
+        document.addEventListener('keydown', onEscapePress);
+        document.addEventListener('focusin', onFocusOutside);
+      } else {
+        removeAllListeners();
+      }
+    });
+  }
+
+  function onClickOutside(event) {
+    if (!overflowDetails.contains(event.target)) {
+      overflowDetails.removeAttribute('open');
+    }
+  }
+
+  function onEscapePress(event) {
+    if (event.key === 'Escape') {
+      overflowDetails.removeAttribute('open');
+    }
+  }
+
+  function onFocusOutside(event) {
+    if (!overflowDetails.contains(event.target)) {
+      overflowDetails.removeAttribute('open');
+    }
+  }
+
+  function removeAllListeners() {
+    document.removeEventListener('click', onClickOutside);
+    document.removeEventListener('keydown', onEscapePress);
+    document.removeEventListener('focusin', onFocusOutside);
+  }
+
   // Run on initial load and resize
   window.addEventListener('load', handleOverflow);
 
