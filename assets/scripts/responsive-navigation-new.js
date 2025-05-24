@@ -122,6 +122,29 @@ document.addEventListener('DOMContentLoaded', function () {
     return data[lastOuterKey][lastInnerKey].right;
   }
 
+  function hideOverflowingItemsOnLoad() {
+    const containerRightEdge = mainNavElem.getBoundingClientRect().right;
+    const data = navigationElementsPositionArray;
+
+    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
+
+    for (let o = 0; o < outerKeys.length; o++) {
+      const outerKey = outerKeys[o];
+      const innerItems = data[outerKey];
+      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
+
+      for (let i = 0; i < innerKeys.length; i++) {
+        const innerKey = innerKeys[i];
+        const item = innerItems[innerKey];
+
+        if (item.visible && item.right > containerRightEdge) {
+          item.visible = false;
+          updateListItemClass(outerKey, innerKey, false);
+        }
+      }
+    }
+  }
+
   function isInLastVisibleRange(number) {
     const data = navigationElementsPositionArray;
     const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
@@ -255,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function () {
     navigationElementsPositionArray = initializeNavigationPositions();
 
     handleCollapsedState();
+    hideOverflowingItemsOnLoad();
   }
 
   function handleOverflow() {

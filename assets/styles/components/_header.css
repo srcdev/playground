@@ -96,10 +96,10 @@
 
           .overflow-navigation__list {
             position: absolute;
-            top: 100%;
+            top: 135%;
             right: 0;
-            background-color: #ffffff;
-            border: 1px solid #efefef75;
+            background-color: #000;
+            border: 1px solid #ffffff90;
             border-radius: 8px;
             padding: 12px;
             margin: 0;
