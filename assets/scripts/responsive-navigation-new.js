@@ -128,22 +128,53 @@ document.addEventListener('DOMContentLoaded', function () {
   function isInLastVisibleRange(number) {
     const data = navigationElementsPositionArray;
 
-    const outerKeys = Object.keys(data);
-    const lastOuterKey = outerKeys[outerKeys.length - 1];
+    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
 
-    const innerItems = data[lastOuterKey];
-    const innerKeys = Object.keys(innerItems);
+    // Iterate over outer lists in reverse
+    for (let o = outerKeys.length - 1; o >= 0; o--) {
+      const outerKey = outerKeys[o];
+      const innerItems = data[outerKey];
+      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
 
-    // Loop backward to find the last visible item
-    for (let i = innerKeys.length - 1; i >= 0; i--) {
-      const key = innerKeys[i];
-      const item = innerItems[key];
-      if (item.visible) {
-        if (number >= item.left && number <= item.right) {
-          item.visible = false; // Update visibility
-          return true;
+      // Iterate over inner items in reverse
+      for (let i = innerKeys.length - 1; i >= 0; i--) {
+        const key = innerKeys[i];
+        const item = innerItems[key];
+        if (item.visible) {
+          if (number >= item.left && number <= item.right) {
+            item.visible = false;
+            return true;
+          }
+          return false; // Stop on first visible item that's not in range
         }
-        break; // If not in range, don't keep checking
+      }
+    }
+
+    return false;
+  }
+
+  function showIfBeyondFirstHiddenRange(number) {
+    const data = navigationElementsPositionArray;
+
+    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
+
+    // Iterate over outer lists in forward order
+    for (let o = 0; o < outerKeys.length; o++) {
+      const outerKey = outerKeys[o];
+      const innerItems = data[outerKey];
+      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
+
+      // Iterate over inner items in forward order
+      for (let i = 0; i < innerKeys.length; i++) {
+        const key = innerKeys[i];
+        const item = innerItems[key];
+        if (!item.visible) {
+          if (number > item.right) {
+            item.visible = true;
+            return true;
+          }
+          return false; // Stop once first hidden item is found but number not past it
+        }
       }
     }
 
@@ -265,6 +296,11 @@ document.addEventListener('DOMContentLoaded', function () {
       if (isShrinking) {
         console.log('isInLastVisibleRange', isInLastVisibleRange(secondaryNavLeftEdge));
         // addLastVisibleNavItemToOverflowList();
+      } else {
+        console.log(
+          'showIfBeyondFirstHiddenRange',
+          showIfBeyondFirstHiddenRange(secondaryNavLeftEdge),
+        );
       }
     } else {
       console.log('secondaryNavElem does not overlap mainNavElem');
