@@ -75,8 +75,43 @@ document.addEventListener('DOMContentLoaded', function () {
     return positionsMap;
   }
 
+  /**
+   * Updates the left/right positions in navigationElementsPositionArray while preserving visibility
+   * @param {Object} existingPositions The current navigationElementsPositionArray with visibility flags
+   */
+  function updateNavigationPositions(existingPositions) {
+    const navLists = mainNavigationElem.querySelectorAll('ul[id$="NavList"]');
+
+    navLists.forEach((list, listIndex) => {
+      const listId = listIndex + 1;
+      const existingList = existingPositions[listId] || {};
+
+      const items = list.querySelectorAll('li');
+
+      items.forEach((item, itemIndex) => {
+        const itemId = itemIndex + 1;
+        const rect = item.getBoundingClientRect();
+
+        if (!existingPositions[listId]) {
+          existingPositions[listId] = {};
+        }
+
+        // Preserve visibility if it already exists, otherwise default to true
+        const existingItem = existingList[itemId];
+        const visible = existingItem?.visible ?? true;
+
+        existingPositions[listId][itemId] = {
+          left: Math.floor(rect.left),
+          right: Math.floor(rect.right),
+          visible: visible,
+        };
+      });
+    });
+
+    console.log('Navigation positions updated:', existingPositions);
+  }
+
   function returnFinalRightPositionValue() {
-    console.log('initializeNavigationPositions', navigationElementsPositionArray);
     const data = navigationElementsPositionArray;
     // Get the last top-level key
     const outerKeys = Object.keys(data);
@@ -87,24 +122,42 @@ document.addEventListener('DOMContentLoaded', function () {
     const lastInnerKey = innerKeys[innerKeys.length - 1];
 
     // Get the 'right' value
-    const lastRight = data[lastOuterKey][lastInnerKey].right;
-    console.log('lastRight', data[lastOuterKey]);
     return data[lastOuterKey][lastInnerKey].right;
   }
 
+  function isInLastVisibleRange(number) {
+    const data = navigationElementsPositionArray;
+
+    const outerKeys = Object.keys(data);
+    const lastOuterKey = outerKeys[outerKeys.length - 1];
+
+    const innerItems = data[lastOuterKey];
+    const innerKeys = Object.keys(innerItems);
+
+    // Loop backward to find the last visible item
+    for (let i = innerKeys.length - 1; i >= 0; i--) {
+      const key = innerKeys[i];
+      const item = innerItems[key];
+      if (item.visible) {
+        if (number >= item.left && number <= item.right) {
+          item.visible = false; // Update visibility
+          return true;
+        }
+        break; // If not in range, don't keep checking
+      }
+    }
+
+    return false;
+  }
+
   function handleCollapsedState() {
-    console.log('handleCollapsedState');
     mainNavBoundryEnd = returnFinalRightPositionValue();
 
     if (mainNavBoundryEnd >= secondaryNavLeftEdge) {
-      // Add collapsed class to mainNavElem
       mainNavElem.classList.add('collapsed');
     } else {
-      // Remove collapsed class from mainNavElem
       mainNavElem.classList.remove('collapsed');
     }
-
-    // Var to get right value of last item in initializeNavigationPositions
   }
 
   function setPreviousSecondaryNavLeftEdge() {
@@ -180,17 +233,8 @@ document.addEventListener('DOMContentLoaded', function () {
     console.clear();
     // Update navigation positions to current state
     handleCollapsedState();
-    navigationElementsPositionArray = initializeNavigationPositions();
-
-    console.log('Navigation Positions Array:');
-    console.log(navigationElementsPositionArray);
-    console.log('- - - - - - - - - - - -');
-
-    console.log('originalFirstListItems');
-    console.log(originalFirstListItems);
-    console.log('- - - - - - - - - - - -');
-    console.log('originalSecondListItems');
-    console.log(originalSecondListItems);
+    // navigationElementsPositionArray = initializeNavigationPositions();
+    updateNavigationPositions(navigationElementsPositionArray);
 
     // Set width of secondary nav
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
@@ -199,34 +243,27 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get position of secondaryNav left edge
     secondaryNavLeftEdge =
       Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
-    // console.log('secondaryNavLeftEdge', secondaryNavLeftEdge);
 
     // Get position of firstNavListElem right edge
     const firstNavListElemRightEdge = Math.floor(firstNavListElem.getBoundingClientRect().right);
-    // console.log('firstNavListElemRightEdge', firstNavListElemRightEdge);
 
     // Get position of secondNavListElem right edge
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
-    // console.log('secondNavListElemRightEdge', secondNavListElemRightEdge);
 
     // Set position when secondaryNav overlaps mainNav
     const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + navItemsGap;
-    // console.log('overlapPosition', overlapPosition);
 
     isShrinking = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
     isExpanding = !isShrinking;
-    // console.log(`isShrinking: ${isShrinking} | isExpanding: ${isExpanding}`);
 
     firstNavInOverflow = firstNavListElemRightEdge + (navItemsGap - 2) > secondaryNavLeftEdge;
     secondNavInOverflow = secondNavListElemRightEdge + (navItemsGap - 2) > secondaryNavLeftEdge;
-    // console.log(
-    //   `firstNavInOverflow: ${firstNavInOverflow} | secondNavInOverflow: ${secondNavInOverflow}`,
-    // );
 
     if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
       console.log('secondaryNavElem overlaps mainNavElem');
 
-      if (isShrinking && secondNavInOverflow) {
+      if (isShrinking) {
+        console.log('isInLastVisibleRange', isInLastVisibleRange(secondaryNavLeftEdge));
         // addLastVisibleNavItemToOverflowList();
       }
     } else {
