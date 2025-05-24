@@ -26,6 +26,10 @@
         justify-content: space-between;
         gap: 12px;
 
+        &.collapsed {
+          justify-content: flex-start;
+        }
+
         margin-inline-end: calc(var(--_secondary-nav-width) + var(--_nav-items-gap));
         overflow-x: hidden;
 
@@ -37,6 +41,12 @@
           gap: 12px;
 
           li {
+            &.hidden {
+              visibility: hidden;
+              opacity: 0;
+              width: 0;
+            }
+
             a {
               display: block;
               text-wrap-mode: nowrap;

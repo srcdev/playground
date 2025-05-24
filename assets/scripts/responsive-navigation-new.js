@@ -2,6 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // User congifuration
   const navItemsGap = 12;
 
+  // Debug elements
+  const mainNavArray = document.getElementById('mainNavArray');
+
   // Get all required elements by ID
   const mainNavigationElem = document.getElementById('mainNavigation');
   const mainNavElem = document.getElementById('mainNav');
@@ -9,37 +12,47 @@ document.addEventListener('DOMContentLoaded', function () {
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
 
-  const navigationElementsPositionArray = {
-    1: {
-      1: {
-        left: 0,
-        right: 0,
-        visible: true,
-      },
-      2: {
-        left: 0,
-        right: 0,
-        visible: true,
-      },
-      3: {
-        left: 0,
-        right: 0,
-        visible: true,
-      },
-    },
-    2: {
-      1: {
-        left: 0,
-        right: 0,
-        visible: true,
-      },
-      2: {
-        left: 0,
-        right: 0,
-        visible: true,
-      },
-    },
-  };
+  // Initialize with empty structure that will be populated
+  let navigationElementsPositionArray = {};
+
+  /**
+   * Initializes the navigationElementsPositionArray with the current positions of all list items
+   * @returns {Object} Updated navigationElementsPositionArray with current positions
+   */
+  function initializeNavigationPositions() {
+    // Get all navigation lists in the main navigation
+    const navLists = mainNavigationElem.querySelectorAll('ul[id$="NavList"]');
+    const positionsMap = {};
+
+    // Loop through each navigation list
+    navLists.forEach((list, listIndex) => {
+      // Create an entry for this list using 1-based indexing to match existing structure
+      const listId = listIndex + 1;
+      positionsMap[listId] = {};
+
+      // Get all list items
+      const items = list.querySelectorAll('li');
+
+      // Loop through each item in the list
+      items.forEach((item, itemIndex) => {
+        // Use 1-based indexing to match existing structure
+        const itemId = itemIndex + 1;
+
+        // Get the bounding rectangle for position information
+        const rect = item.getBoundingClientRect();
+
+        // Store the position data
+        positionsMap[listId][itemId] = {
+          left: Math.floor(rect.left),
+          right: Math.floor(rect.right),
+          visible: true,
+        };
+      });
+    });
+
+    console.log('Navigation positions initialized:', positionsMap);
+    return positionsMap;
+  }
 
   let previousSecondNavListElemRightEdge = Math.floor(
     secondNavListElem.getBoundingClientRect().right,
@@ -76,27 +89,54 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function setInitialItems() {
     mainNavigationElem.style.setProperty('--_nav-items-gap', `${navItemsGap}px`);
+
+    // Initialize the navigation positions array
+    navigationElementsPositionArray = initializeNavigationPositions();
   }
 
-  // Move last item from originalSecondListItems to first item in overflowList
-  function moveLastItemToOverflow() {
-    console.log('moveLastItemToOverflow()');
-
-    const lastItem = originalSecondListItems.pop();
-    if (lastItem) {
+  // Add last item represented by navigationElementsPositionArray marked as visible to first position in overflowList
+  function addLastVisibleNavItemToOverflowList() {
+    // Get the last non hidden item in the second navigation list
+    const lastVisibleItem = Array.from(secondNavListElem.children)
+      .reverse()
+      .find((item) => {
+        const itemId = Array.from(secondNavListElem.children).indexOf(item) + 1;
+        const listId = 2; // Assuming secondNavListElem is the second list
+        return (
+          navigationElementsPositionArray[listId][itemId] &&
+          navigationElementsPositionArray[listId][itemId].visible
+        );
+      });
+    console.log('lastVisibleItem', lastVisibleItem);
+    if (lastVisibleItem) {
+      // Clone the last visible item
+      const clonedItem = lastVisibleItem.cloneNode(true);
+      // Remove the last visible item from the second navigation list
+      // lastVisibleItem.remove();
+      lastVisibleItem.classList.add('hidden');
+      // Append the cloned item to the overflow list
       const overflowListElem = document.getElementById('overflowList');
-      overflowListElem.appendChild(lastItem.cloneNode(true));
-
-      // now delete the last item from the secondNavListElem
-      const lastItemInSecondNavList = secondNavListElem.lastElementChild;
-      if (lastItemInSecondNavList) {
-        secondNavListElem.removeChild(lastItemInSecondNavList);
-      }
+      overflowListElem.appendChild(clonedItem);
+      // Update the navigationElementsPositionArray to mark this item as not visible
+      const itemId = Array.from(secondNavListElem.children).indexOf(lastVisibleItem) + 1;
+      const listId = 2; // Assuming secondNavListElem is the second list
+      navigationElementsPositionArray[listId][itemId].visible = false;
+      console.log('Updated navigationElementsPositionArray:', navigationElementsPositionArray);
+    } else {
+      console.log('No last visible item found in the second navigation list');
     }
   }
 
   function handleOverflow() {
     console.clear();
+
+    // Update navigation positions to current state
+    navigationElementsPositionArray = initializeNavigationPositions();
+    mainNavArray.innerHTML = JSON.stringify(navigationElementsPositionArray);
+
+    console.log('Navigation Positions Array:');
+    console.log(navigationElementsPositionArray);
+    console.log('- - - - - - - - - - - -');
 
     console.log('originalFirstListItems');
     console.log(originalFirstListItems);
@@ -114,10 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
     // Get position of secondaryNav left edge
     const secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left);
     console.log('secondaryNavLeftEdge', secondaryNavLeftEdge);
-
-    // Get position of mainNav right edge
-    const mainNavRectRightEdge = Math.floor(mainNavElem.getBoundingClientRect().right);
-    // console.log('mainNavRectRightEdge', mainNavRectRightEdge);
 
     // Get position of firstNavListElem right edge
     const firstNavListElemRightEdge = Math.floor(firstNavListElem.getBoundingClientRect().right);
@@ -144,10 +180,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
       console.log('secondaryNavElem overlaps mainNavElem');
 
+      // Add collapsed class to mainNavElem
+      mainNavElem.classList.add('collapsed');
+
       if (isShrinking && secondNavInOverflow) {
-        moveLastItemToOverflow();
+        addLastVisibleNavItemToOverflowList();
       }
     } else {
+      // Remove collapsed class from mainNavElem
+      mainNavElem.classList.remove('collapsed');
       console.log('secondaryNavElem does not overlap mainNavElem');
     }
 
