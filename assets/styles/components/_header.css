@@ -44,7 +44,6 @@
             &.hidden {
               visibility: hidden;
               opacity: 0;
-              width: 0;
             }
 
             a {

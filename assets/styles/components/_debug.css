@@ -1,0 +1,13 @@
+@layer page {
+  .debug {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    div {
+      border-radius: 8px;
+      outline: 1px solid #ffffff75;
+      padding-inline: 8px;
+    }
+  }
+}
