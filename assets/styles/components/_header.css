@@ -74,6 +74,14 @@
           position: relative;
           cursor: pointer;
 
+          transition: all 0.2s ease-in-out;
+
+          &.hidden {
+            opacity: 0;
+            visibility: hidden;
+            width: 0;
+          }
+
           summary {
             text-align: right;
             list-style: none;
@@ -111,11 +119,6 @@
               }
             }
           }
-        }
-
-        .hiddene {
-          visibility: hidden;
-          opacity: 0;
         }
 
         .secondary-navigation__list {

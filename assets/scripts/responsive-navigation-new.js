@@ -8,12 +8,11 @@ document.addEventListener('DOMContentLoaded', function () {
   const firstNavListElem = document.getElementById('firstNavList');
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
-  const overflowList = document.getElementById('overflowList');
+  const overflowDetails = document.getElementById('overflowDetails');
 
   // Initialize with empty structure that will be populated
   let navigationElementsPositionArray = {};
   let mainNavBoundryEnd = 0;
-  let mainNavAtMinWidthThreshold = false;
 
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
@@ -72,7 +71,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     });
 
-    console.log('Navigation positions initialized:', positionsMap);
     return positionsMap;
   }
 
@@ -108,8 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
         };
       });
     });
-
-    console.log('Navigation positions updated:', existingPositions);
   }
 
   function returnFinalRightPositionValue() {
@@ -208,6 +204,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!overflowList.querySelector(`[data-id="${itemId}"]`)) {
           const clone = item.cloneNode(true);
           clone.setAttribute('data-id', itemId);
+          clone.classList.remove('hidden');
 
           // Optional: add a fade-in class or similar
           // clone.classList.add('fade-in');
@@ -217,6 +214,12 @@ document.addEventListener('DOMContentLoaded', function () {
             clone.classList.add('fade-in-active');
           });
         }
+      }
+      // If overflowList has no children, add class hidden to overflowDetails (parent element)
+      if (overflowList.children.length === 0) {
+        overflowDetails.classList.add('hidden');
+      } else {
+        overflowDetails.classList.remove('hidden');
       }
     });
   }
@@ -240,23 +243,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const debouncedPrevMeasurement = debounceFunction(() => {
     setPreviousSecondaryNavLeftEdge();
-    console.log('Function executed after delay');
   }, 50);
 
   let isShrinking = false;
   let isExpanding = false;
-
-  let firstNavInOverflow = false;
-  let secondNavInOverflow = false;
-
-  // Store original navigation items from both lists
-  const originalFirstListItems = Array.from(firstNavListElem.children).map((item) =>
-    item.cloneNode(true),
-  );
-
-  const originalSecondListItems = Array.from(secondNavListElem.children).map((item) =>
-    item.cloneNode(true),
-  );
 
   function setInitialItems() {
     mainNavigationElem.style.setProperty('--_nav-items-gap', `${navItemsGap}px`);
@@ -267,41 +257,7 @@ document.addEventListener('DOMContentLoaded', function () {
     handleCollapsedState();
   }
 
-  // Add last item represented by navigationElementsPositionArray marked as visible to first position in overflowList
-  function addLastVisibleNavItemToOverflowList() {
-    // Get the last non hidden item in the second navigation list
-    const lastVisibleItem = Array.from(secondNavListElem.children)
-      .reverse()
-      .find((item) => {
-        const itemId = Array.from(secondNavListElem.children).indexOf(item) + 1;
-        const listId = 2; // Assuming secondNavListElem is the second list
-        return (
-          navigationElementsPositionArray[listId][itemId] &&
-          navigationElementsPositionArray[listId][itemId].visible
-        );
-      });
-    console.log('lastVisibleItem', lastVisibleItem);
-    if (lastVisibleItem) {
-      // Clone the last visible item
-      const clonedItem = lastVisibleItem.cloneNode(true);
-      // Remove the last visible item from the second navigation list
-      // lastVisibleItem.remove();
-      lastVisibleItem.classList.add('hidden');
-      // Append the cloned item to the overflow list
-      const overflowListElem = document.getElementById('overflowList');
-      overflowListElem.appendChild(clonedItem);
-      // Update the navigationElementsPositionArray to mark this item as not visible
-      const itemId = Array.from(secondNavListElem.children).indexOf(lastVisibleItem) + 1;
-      const listId = 2; // Assuming secondNavListElem is the second list
-      navigationElementsPositionArray[listId][itemId].visible = false;
-      console.log('Updated navigationElementsPositionArray:', navigationElementsPositionArray);
-    } else {
-      console.log('No last visible item found in the second navigation list');
-    }
-  }
-
   function handleOverflow() {
-    console.clear();
     // Update navigation positions to current state
     handleCollapsedState();
     // navigationElementsPositionArray = initializeNavigationPositions();
@@ -315,9 +271,6 @@ document.addEventListener('DOMContentLoaded', function () {
     secondaryNavLeftEdge =
       Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
 
-    // Get position of firstNavListElem right edge
-    const firstNavListElemRightEdge = Math.floor(firstNavListElem.getBoundingClientRect().right);
-
     // Get position of secondNavListElem right edge
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
 
@@ -327,23 +280,12 @@ document.addEventListener('DOMContentLoaded', function () {
     isShrinking = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
     isExpanding = !isShrinking;
 
-    firstNavInOverflow = firstNavListElemRightEdge + (navItemsGap - 2) > secondaryNavLeftEdge;
-    secondNavInOverflow = secondNavListElemRightEdge + (navItemsGap - 2) > secondaryNavLeftEdge;
-
     if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
-      console.log('secondaryNavElem overlaps mainNavElem');
-
       if (isShrinking) {
-        console.log('isInLastVisibleRange', isInLastVisibleRange(secondaryNavLeftEdge));
-        // addLastVisibleNavItemToOverflowList();
+        isInLastVisibleRange(secondaryNavLeftEdge);
       } else {
-        console.log(
-          'showIfBeyondFirstHiddenRange',
-          showIfBeyondFirstHiddenRange(secondaryNavLeftEdge),
-        );
+        showIfBeyondFirstHiddenRange(secondaryNavLeftEdge);
       }
-    } else {
-      console.log('secondaryNavElem does not overlap mainNavElem');
     }
 
     debouncedPrevMeasurement();
