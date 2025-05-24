@@ -11,56 +11,50 @@
 
     main {
       outline: 1px dashed transparent;
+    }
 
-      &.alignCenter {
-        margin-inline: auto;
-      }
+    main.alignCenter {
+      margin-inline: auto;
+    }
 
-      [class^='slot'] {
-        [class^='desc'] {
-          display: none;
-        }
-      }
+    main[data-canvas='mobile'] {
+      max-width: 412px;
+    }
 
-      &[data-canvas='mobile'] {
-        max-width: 412px;
+    main[data-canvas='mobile'] .desc-mobile {
+      display: block;
+    }
 
-        .desc-mobile {
-          display: block;
-        }
-      }
+    main[data-canvas='tablet-small'] {
+      max-width: 768px;
+    }
 
-      &[data-canvas='tablet-small'] {
-        max-width: 768px;
+    main[data-canvas='tablet-small'] .desc-tablet-small {
+      display: block;
+    }
 
-        .desc-tablet-small {
-          display: block;
-        }
-      }
+    main[data-canvas='tablet-large'] {
+      max-width: 1024px;
+    }
 
-      &[data-canvas='tablet-large'] {
-        max-width: 1024px;
+    main[data-canvas='tablet-large'] .desc-tablet-large {
+      display: block;
+    }
 
-        .desc-tablet-large {
-          display: block;
-        }
-      }
+    main[data-canvas='laptop'] {
+      max-width: 1280px;
+    }
 
-      &[data-canvas='laptop'] {
-        max-width: 1280px;
+    main[data-canvas='laptop'] .desc-laptop {
+      display: block;
+    }
 
-        .desc-laptop {
-          display: block;
-        }
-      }
+    main[data-canvas='desktop'] {
+      max-width: 100%;
+    }
 
-      &[data-canvas='desktop'] {
-        max-width: 100%;
-
-        .desc-desktop {
-          display: block;
-        }
-      }
+    main[data-canvas='desktop'] .desc-desktop {
+      display: block;
     }
   }
 }

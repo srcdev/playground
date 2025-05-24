@@ -31,10 +31,11 @@
       }
 
       select {
-        &,
-        &::picker(select) {
-          appearance: base-select;
-        }
+        appearance: base-select;
+      }
+
+      select::picker(select) {
+        appearance: base-select;
       }
     }
   }
