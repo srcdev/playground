@@ -301,7 +301,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + navItemsGap;
 
     isCollapsing = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
-    isExpanding = !isCollapsing;
 
     if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
       if (isCollapsing) {
