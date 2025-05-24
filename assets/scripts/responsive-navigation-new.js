@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const firstNavListElem = document.getElementById('firstNavList');
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
+  const overflowList = document.getElementById('overflowList');
 
   // Initialize with empty structure that will be populated
   let navigationElementsPositionArray = {};
@@ -181,18 +182,43 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function updateListItemClass(outerIndex, innerIndex, isVisible) {
     const navLists = mainNavElem.querySelectorAll('ul[id$="NavList"]');
-    const list = navLists[outerIndex - 1]; // 1-based to 0-based index
+    const list = navLists[outerIndex - 1];
     if (!list) return;
 
     const listItems = list.querySelectorAll('li');
-    const item = listItems[innerIndex - 1]; // 1-based to 0-based index
+    const item = listItems[innerIndex - 1];
     if (!item) return;
 
-    if (isVisible) {
-      item.classList.remove('hidden');
-    } else {
-      item.classList.add('hidden');
-    }
+    const overflowList = document.getElementById('overflowList');
+    if (!overflowList) return;
+
+    const itemId = `overflow-${outerIndex}-${innerIndex}`;
+
+    requestAnimationFrame(() => {
+      if (isVisible) {
+        item.classList.remove('hidden');
+
+        const existing = overflowList.querySelector(`[data-id="${itemId}"]`);
+        if (existing) {
+          overflowList.removeChild(existing);
+        }
+      } else {
+        item.classList.add('hidden');
+
+        if (!overflowList.querySelector(`[data-id="${itemId}"]`)) {
+          const clone = item.cloneNode(true);
+          clone.setAttribute('data-id', itemId);
+
+          // Optional: add a fade-in class or similar
+          // clone.classList.add('fade-in');
+
+          overflowList.insertBefore(clone, overflowList.firstChild);
+          requestAnimationFrame(() => {
+            clone.classList.add('fade-in-active');
+          });
+        }
+      }
+    });
   }
 
   function handleCollapsedState() {

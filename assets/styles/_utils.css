@@ -14,4 +14,16 @@
   .visible {
     visibility: visible;
   }
+  .fade-in {
+    opacity: 0;
+    transform: translateY(-5px);
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
+  }
+
+  .fade-in-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
