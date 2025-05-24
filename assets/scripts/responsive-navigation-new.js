@@ -127,25 +127,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function isInLastVisibleRange(number) {
     const data = navigationElementsPositionArray;
-
     const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
 
-    // Iterate over outer lists in reverse
     for (let o = outerKeys.length - 1; o >= 0; o--) {
       const outerKey = outerKeys[o];
       const innerItems = data[outerKey];
       const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
 
-      // Iterate over inner items in reverse
       for (let i = innerKeys.length - 1; i >= 0; i--) {
-        const key = innerKeys[i];
-        const item = innerItems[key];
+        const innerKey = innerKeys[i];
+        const item = innerItems[innerKey];
+
         if (item.visible) {
           if (number >= item.left && number <= item.right) {
             item.visible = false;
+            updateListItemClass(outerKey, innerKey, false);
             return true;
           }
-          return false; // Stop on first visible item that's not in range
+          return false;
         }
       }
     }
@@ -155,30 +154,45 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function showIfBeyondFirstHiddenRange(number) {
     const data = navigationElementsPositionArray;
-
     const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
 
-    // Iterate over outer lists in forward order
     for (let o = 0; o < outerKeys.length; o++) {
       const outerKey = outerKeys[o];
       const innerItems = data[outerKey];
       const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
 
-      // Iterate over inner items in forward order
       for (let i = 0; i < innerKeys.length; i++) {
-        const key = innerKeys[i];
-        const item = innerItems[key];
+        const innerKey = innerKeys[i];
+        const item = innerItems[innerKey];
+
         if (!item.visible) {
           if (number > item.right) {
             item.visible = true;
+            updateListItemClass(outerKey, innerKey, true);
             return true;
           }
-          return false; // Stop once first hidden item is found but number not past it
+          return false;
         }
       }
     }
 
     return false;
+  }
+
+  function updateListItemClass(outerIndex, innerIndex, isVisible) {
+    const navLists = mainNavElem.querySelectorAll('ul[id$="NavList"]');
+    const list = navLists[outerIndex - 1]; // 1-based to 0-based index
+    if (!list) return;
+
+    const listItems = list.querySelectorAll('li');
+    const item = listItems[innerIndex - 1]; // 1-based to 0-based index
+    if (!item) return;
+
+    if (isVisible) {
+      item.classList.remove('hidden');
+    } else {
+      item.classList.add('hidden');
+    }
   }
 
   function handleCollapsedState() {
