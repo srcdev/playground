@@ -1,3 +1,5 @@
+import debounceFunction from './debounceFunction.js';
+
 document.addEventListener('DOMContentLoaded', function () {
   // User congifuration
   const navItemsGap = 12;
@@ -18,23 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
   let secondaryNavLeftEdge = 0;
   // let previousSecondNavListElemRightEdge = 0;
   let previousSecondaryNavLeftEdge = 0;
-
-  function debounceFunction(func, delay) {
-    let timeoutId;
-
-    // Return a new function that will be debounced
-    return function (...args) {
-      // Clear the previous timeout if it exists
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
-
-      // Set a new timeout to call the original function after the specified delay
-      timeoutId = setTimeout(() => {
-        func.apply(this, args);
-      }, delay);
-    };
-  }
 
   /**
    * Initializes the navigationElementsPositionArray with the current positions of all list items
@@ -280,37 +265,42 @@ document.addEventListener('DOMContentLoaded', function () {
     hideOverflowingItemsOnLoad();
   }
 
-  function handleOverflow() {
-    // Update navigation positions to current state
-    handleCollapsedState();
-    // navigationElementsPositionArray = initializeNavigationPositions();
-    updateNavigationPositions(navigationElementsPositionArray);
+  // Consolidate visibility logic into a single function
+  function updateVisibilityBasedOnPosition() {
+    const containerRightEdge = mainNavElem.getBoundingClientRect().right;
+    const data = navigationElementsPositionArray;
 
-    // Set width of secondary nav
+    Object.keys(data).forEach((outerKey) => {
+      const innerItems = data[outerKey];
+      Object.keys(innerItems).forEach((innerKey) => {
+        const item = innerItems[innerKey];
+        const isVisible = item.right <= containerRightEdge;
+        if (item.visible !== isVisible) {
+          item.visible = isVisible;
+          updateListItemClass(outerKey, innerKey, isVisible);
+        }
+      });
+    });
+  }
+
+  // Optimize handleOverflow to reduce redundant calculations
+  function handleOverflow() {
+    updateNavigationPositions(navigationElementsPositionArray);
+    updateVisibilityBasedOnPosition();
+
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
     mainNavElem.style.setProperty('--_secondary-nav-width', `${secondaryNavWidth}px`);
 
-    // Get position of secondaryNav left edge
     secondaryNavLeftEdge =
       Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
-
-    // Get position of secondNavListElem right edge
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
-
-    // Set position when secondaryNav overlaps mainNav
     const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + navItemsGap;
 
-    isCollapsing = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
-
-    if (overlapPosition < Math.floor(navItemsGap * 2 - 1)) {
-      if (isCollapsing) {
-        isInLastVisibleRange(secondaryNavLeftEdge);
-      } else {
-        showIfBeyondFirstHiddenRange(secondaryNavLeftEdge);
-      }
+    if (overlapPosition < 0) {
+      mainNavElem.classList.add('collapsed');
+    } else {
+      mainNavElem.classList.remove('collapsed');
     }
-
-    debouncedPrevMeasurement();
   }
 
   // Handle overflow nav details toggle

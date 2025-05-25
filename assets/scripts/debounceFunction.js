@@ -1,5 +1,5 @@
 // Function that takes a function and a delay as arguments
-export function debounceFunction(func, delay) {
+export default function debounceFunction(func, delay) {
   let timeoutId;
 
   // Return a new function that will be debounced
