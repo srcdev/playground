@@ -107,6 +107,60 @@
               display: block;
               text-wrap-mode: nowrap;
             }
+
+            .main-navigation_expanding-navigation {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              position: relative;
+              cursor: pointer;
+
+              transition: all 0.2s ease-in-out;
+
+              &.hidden {
+                opacity: 0;
+                visibility: hidden;
+                width: 0;
+              }
+
+              summary {
+                text-align: right;
+                list-style: none;
+                padding-inline: 5px;
+                border: 1px solid #efefef75;
+              }
+
+              summary::-webkit-details-marker,
+              summary::marker {
+                display: none;
+              }
+
+              .expanding-navigation__list {
+                position: absolute;
+                top: 135%;
+                right: 0;
+                background-color: #000;
+                border: 1px solid #ffffff90;
+                border-radius: 8px;
+                padding: 12px;
+                margin: 0;
+                z-index: 999;
+                min-width: 120px;
+
+                li {
+                  margin-bottom: 8px;
+
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+
+                  a {
+                    display: block;
+                    text-wrap-mode: nowrap;
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -120,6 +174,60 @@
         justify-content: space-between;
 
         outline: 0px solid yellow;
+
+        .secondary-navigation_expanding-navigation {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          position: relative;
+          cursor: pointer;
+
+          transition: all 0.2s ease-in-out;
+
+          &.hidden {
+            opacity: 0;
+            visibility: hidden;
+            width: 0;
+          }
+
+          summary {
+            text-align: right;
+            list-style: none;
+            padding-inline: 5px;
+            border: 1px solid #efefef75;
+          }
+
+          summary::-webkit-details-marker,
+          summary::marker {
+            display: none;
+          }
+
+          .expanding-navigation__list {
+            position: absolute;
+            top: 135%;
+            right: 0;
+            background-color: #000;
+            border: 1px solid #ffffff90;
+            border-radius: 8px;
+            padding: 12px;
+            margin: 0;
+            z-index: 999;
+            min-width: 120px;
+
+            li {
+              margin-bottom: 8px;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              a {
+                display: block;
+                text-wrap-mode: nowrap;
+              }
+            }
+          }
+        }
 
         .secondary-navigation__list {
           display: flex;
