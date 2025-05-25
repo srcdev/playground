@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const list = navLists[outerIndex - 1];
     if (!list) return;
 
-    const listItems = list.querySelectorAll('li');
+    const listItems = list.querySelectorAll('li.main-navigation__item'); // Target only li elements with the specific class
     const item = listItems[innerIndex - 1];
     if (!item) return;
 
@@ -153,12 +153,15 @@ document.addEventListener('DOMContentLoaded', function () {
         item.classList.add('hidden');
 
         if (!overflowList.querySelector(`[data-id="${itemId}"]`)) {
-          const clone = item.cloneNode(true);
+          const clone = item.cloneNode(true); // Clone the entire li element, including nested content
           clone.setAttribute('data-id', itemId);
           clone.classList.remove('hidden');
 
-          // Optional: add a fade-in class or similar
-          // clone.classList.add('fade-in');
+          // Ensure nested details elements are properly initialized
+          const nestedDetails = clone.querySelectorAll('details');
+          nestedDetails.forEach((details) => {
+            details.open = false; // Reset the open state of cloned details
+          });
 
           overflowList.insertBefore(clone, overflowList.firstChild);
           requestAnimationFrame(() => {
