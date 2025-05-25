@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Get all required elements by ID
   const mainNavigationElem = document.getElementById('mainNavigation');
   const mainNavElem = document.getElementById('mainNav');
-  const firstNavListElem = document.getElementById('firstNavList');
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
   const overflowDetails = document.getElementById('overflowDetails');
@@ -18,8 +17,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
-  // let previousSecondNavListElemRightEdge = 0;
-  let previousSecondaryNavLeftEdge = 0;
 
   /**
    * Initializes the navigationElementsPositionArray with the current positions of all list items
@@ -130,60 +127,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function isInLastVisibleRange(number) {
-    const data = navigationElementsPositionArray;
-    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
-
-    for (let o = outerKeys.length - 1; o >= 0; o--) {
-      const outerKey = outerKeys[o];
-      const innerItems = data[outerKey];
-      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
-
-      for (let i = innerKeys.length - 1; i >= 0; i--) {
-        const innerKey = innerKeys[i];
-        const item = innerItems[innerKey];
-
-        if (item.visible) {
-          if (number >= item.left && number <= item.right) {
-            item.visible = false;
-            updateListItemClass(outerKey, innerKey, false);
-            return true;
-          }
-          return false;
-        }
-      }
-    }
-
-    return false;
-  }
-
-  function showIfBeyondFirstHiddenRange(number) {
-    const data = navigationElementsPositionArray;
-    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
-
-    for (let o = 0; o < outerKeys.length; o++) {
-      const outerKey = outerKeys[o];
-      const innerItems = data[outerKey];
-      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
-
-      for (let i = 0; i < innerKeys.length; i++) {
-        const innerKey = innerKeys[i];
-        const item = innerItems[innerKey];
-
-        if (!item.visible) {
-          if (number > item.right) {
-            item.visible = true;
-            updateListItemClass(outerKey, innerKey, true);
-            return true;
-          }
-          return false;
-        }
-      }
-    }
-
-    return false;
-  }
-
   function updateListItemClass(outerIndex, innerIndex, isVisible) {
     const navLists = mainNavElem.querySelectorAll('ul[id$="NavList"]');
     const list = navLists[outerIndex - 1];
@@ -242,19 +185,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function setPreviousSecondaryNavLeftEdge() {
-    // Set previous value with debounce
-    previousSecondaryNavLeftEdge = secondaryNavLeftEdge;
-  }
-
-  setPreviousSecondaryNavLeftEdge();
-
-  const debouncedPrevMeasurement = debounceFunction(() => {
-    setPreviousSecondaryNavLeftEdge();
-  }, 50);
-
-  let isCollapsing = false;
-
   function setInitialItems() {
     mainNavigationElem.style.setProperty('--_nav-items-gap', `${navItemsGap}px`);
 
@@ -269,6 +199,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function updateVisibilityBasedOnPosition() {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
+
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
 
     Object.keys(data).forEach((outerKey) => {
       const innerItems = data[outerKey];
@@ -349,16 +282,6 @@ document.addEventListener('DOMContentLoaded', function () {
       handleOverflow();
     });
   });
-
-  // let resizeTimeout;
-
-  // window.addEventListener('resize', () => {
-  //   clearTimeout(resizeTimeout);
-  //   resizeTimeout = setTimeout(() => {
-  //     navigationElementsPositionArray = initializeNavigationPositions();
-  //     hideOverflowingItemsOnLoad();
-  //   }, 100); // debounce to avoid layout thrashing
-  // });
 
   // Run once on DOMContentLoaded too
   setInitialItems();
