@@ -360,6 +360,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
+  // let resizeTimeout;
+
+  // window.addEventListener('resize', () => {
+  //   clearTimeout(resizeTimeout);
+  //   resizeTimeout = setTimeout(() => {
+  //     navigationElementsPositionArray = initializeNavigationPositions();
+  //     hideOverflowingItemsOnLoad();
+  //   }, 100); // debounce to avoid layout thrashing
+  // });
+
   // Run once on DOMContentLoaded too
   setInitialItems();
   handleOverflow();
