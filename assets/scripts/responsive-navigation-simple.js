@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const secondaryNavElem = document.getElementById('secondaryNav');
   const overflowDetails = document.getElementById('overflowDetails');
 
+  // Array to track all details elements and their states
+  let detailsConfig = [];
+
   // Where to add overflow items
   let useInsertBefore = true; // Set to false to use appendChild instead
 
@@ -18,6 +21,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
+
+  /**
+   * Initializes tracking for all details elements within mainNavigation
+   * Adds data-details-id attribute to each one and tracks open state
+   */
+  function initializeDetailsElements() {
+    const detailsElements = mainNavigationElem.querySelectorAll('details');
+
+    detailsElements.forEach((details, index) => {
+      // Add data-details-id attribute
+      details.setAttribute('data-details-id', index);
+
+      // Add to tracking array with initial state
+      detailsConfig.push({
+        id: index,
+        element: details,
+        open: details.hasAttribute('open'),
+      });
+
+      // Add event listener to track state changes
+      details.addEventListener('toggle', () => {
+        detailsConfig[index].open = details.open;
+        console.log(`Details #${index} state changed to ${details.open ? 'open' : 'closed'}`);
+
+        document.getElementById('detailsConfig').innerHTML = JSON.stringify(detailsConfig, null, 2);
+      });
+    });
+
+    console.log(`Initialized ${detailsConfig.length} details elements`);
+  }
 
   /**
    * Initializes the navigationElementsPositionArray with the current positions of all list items
@@ -313,4 +346,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Run once on DOMContentLoaded too
   setInitialItems();
   handleOverflow();
+
+  // Initialize details elements tracking
+  initializeDetailsElements();
 });
