@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const secondaryNavElem = document.getElementById('secondaryNav');
   const overflowDetails = document.getElementById('overflowDetails');
 
+  // Where to add overflow items
+  let useInsertBefore = true; // Set to false to use appendChild instead
+
   // Initialize with empty structure that will be populated
   let navigationElementsPositionArray = {};
   let mainNavBoundryEnd = 0;
@@ -173,9 +176,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
           // Append to the correct ul based on the original parent
           if (list.id === 'firstNavList') {
-            overflowFirstList.appendChild(clone);
+            if (useInsertBefore) {
+              overflowFirstList.insertBefore(clone, overflowFirstList.firstChild);
+            } else {
+              overflowFirstList.appendChild(clone);
+            }
           } else if (list.id === 'secondNavList') {
-            overflowSecondList.appendChild(clone);
+            if (useInsertBefore) {
+              overflowSecondList.insertBefore(clone, overflowSecondList.firstChild);
+            } else {
+              overflowSecondList.appendChild(clone);
+            }
           }
 
           requestAnimationFrame(() => {
