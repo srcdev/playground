@@ -4,29 +4,133 @@
     <meta charset="UTF-8" />
     <title>title</title>
 
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="./assets/styles/index.css" />
+
+    <style>
+      @layer page {
+        .navigation-old {
+          display: flex;
+          gap: 12px;
+
+          margin: 12px;
+          border-radius: 8px;
+          background-color: #efefef05;
+          border: 1px solid #efefef75;
+          padding: 12px;
+
+          flex-grow: 1;
+          overflow-x: hidden;
+
+          .main-navigation {
+            display: flex;
+            flex-wrap: nowrap;
+            flex-grow: 1;
+            justify-content: space-between;
+            gap: 12px;
+
+            .main-navigation__list {
+              display: flex;
+              flex-wrap: nowrap;
+              gap: 12px;
+
+              li {
+                a {
+                  display: block;
+                  text-wrap-mode: nowrap;
+                }
+              }
+            }
+          }
+
+          .secondary-navigation {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 12px;
+            justify-content: space-between;
+
+            .overflow-navigation {
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              position: relative;
+              cursor: pointer;
+
+              summary {
+                text-align: right;
+                list-style: none;
+              }
+              summary::-webkit-details-marker,
+              summary::marker {
+                display: none;
+              }
+
+              .overflow-navigation__list {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background-color: #ffffff;
+                border: 1px solid #efefef75;
+                border-radius: 8px;
+                padding: 12px;
+                margin: 0;
+                z-index: 999;
+                min-width: 120px;
+
+                li {
+                  margin-bottom: 8px;
+
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+
+                  a {
+                    display: block;
+                    text-wrap-mode: nowrap;
+                  }
+                }
+              }
+            }
+
+            .hiddene {
+              visibility: hidden;
+              opacity: 0;
+            }
+
+            .secondary-navigation__list {
+              display: flex;
+              flex-wrap: nowrap;
+              gap: 12px;
+
+              li {
+                a {
+                  display: block;
+                  text-wrap-mode: nowrap;
+                }
+              }
+            }
+          }
+        }
+      }
+    </style>
   </head>
   <body>
     <main>
       <section class="layout">
-        <header>
+        <header class="simple">
           <h1>Mint 66</h1>
           <div class="navigation" id="mainNavigation">
             <nav class="main-navigation" id="mainNav">
               <ul class="main-navigation__list" id="firstNavList">
-                <li class="main-navigation__item"><a href="#">Communicate</a></li>
-                <li class="main-navigation__item"><a href="#">Analytics</a></li>
-                <li class="main-navigation__item"><a href="#">Feedback</a></li>
+                <li><a href="#">Communicate</a></li>
+                <li><a href="#">Analytics</a></li>
+                <li><a href="#">Feedback</a></li>
               </ul>
               <ul class="main-navigation__list" id="secondNavList">
-                <li class="main-navigation__item"><a href="#">360 Feedback Demo</a></li>
-                <li class="main-navigation__item"><a href="#">Joe Bloggs</a></li>
-                <li class="main-navigation__item">
-                  <details class="main-navigation_expanding-navigation">
+                <li><a href="#">360 Feedback Demo</a></li>
+                <li><a href="#">Joe Bloggs</a></li>
+                <!-- <li>
+                  <details class="expanding-navigation">
                     <summary>Account</summary>
                     <ul class="expanding-navigation__list">
                       <li><a href="#">Settings</a></li>
@@ -34,14 +138,11 @@
                       <li><a href="#">Logout</a></li>
                     </ul>
                   </details>
-                </li>
+                </li> -->
               </ul>
             </nav>
             <nav class="secondary-navigation" id="secondaryNav">
-              <details
-                class="secondary-navigation_expanding-navigation hidden"
-                id="overflowDetails"
-              >
+              <details class="expanding-navigation hidden" id="overflowDetails">
                 <summary>V</summary>
                 <ul class="expanding-navigation__list" id="overflowList"></ul>
               </details>

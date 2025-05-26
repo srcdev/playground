@@ -132,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const list = navLists[outerIndex - 1];
     if (!list) return;
 
-    const listItems = list.querySelectorAll('li');
+    const listItems = list.querySelectorAll('li.main-navigation__item'); // Target only li elements with the specific class
     const item = listItems[innerIndex - 1];
     if (!item) return;
 
@@ -153,12 +153,16 @@ document.addEventListener('DOMContentLoaded', function () {
         item.classList.add('hidden');
 
         if (!overflowList.querySelector(`[data-id="${itemId}"]`)) {
-          const clone = item.cloneNode(true);
+          const clone = item.cloneNode(true); // Clone the entire li element, including nested content
           clone.setAttribute('data-id', itemId);
           clone.classList.remove('hidden');
 
-          // Optional: add a fade-in class or similar
-          // clone.classList.add('fade-in');
+          // Ensure nested details elements are properly initialized
+          const nestedDetails = clone.querySelectorAll('details');
+          nestedDetails.forEach((details, index) => {
+            details.open = false; // Reset the open state of cloned details
+            details.setAttribute('data-details-id', `details-${index}`); // Assign unique data attribute
+          });
 
           overflowList.insertBefore(clone, overflowList.firstChild);
           requestAnimationFrame(() => {
@@ -236,34 +240,139 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // Handle overflow nav details toggle
+  // Update overflowDetails toggle handler
   if (overflowDetails) {
-    overflowDetails.addEventListener('toggle', () => {
-      if (overflowDetails.open) {
-        document.addEventListener('click', onClickOutside);
-        document.addEventListener('keydown', onEscapePress);
-        document.addEventListener('focusin', onFocusOutside);
+    overflowDetails.addEventListener('toggle', (event) => {
+      const activeDetails = event.target;
+
+      // Update data-details-active attributes for all details elements, including nested ones
+      const allDetails = document.querySelectorAll(
+        '#mainNavigation details, #mainNavigation details details',
+      );
+      allDetails.forEach((details) => {
+        if (details === activeDetails) {
+          details.setAttribute('data-details-active', 'true');
+        } else {
+          details.setAttribute('data-details-active', 'false');
+        }
+      });
+
+      if (activeDetails.open) {
+        document.addEventListener('click', (e) => onClickOutside(e, activeDetails));
+        document.addEventListener('keydown', (e) => onEscapePress(e, activeDetails));
+        document.addEventListener('focusin', (e) => onFocusOutside(e, activeDetails));
       } else {
         removeAllListeners();
       }
     });
   }
 
-  function onClickOutside(event) {
-    if (!overflowDetails.contains(event.target)) {
-      overflowDetails.removeAttribute('open');
+  // Add toggle event listeners to all details elements, including nested ones
+  function initializeDetailsToggleListeners() {
+    const allDetails = document.querySelectorAll(
+      '#mainNavigation details, #mainNavigation details details',
+    );
+    allDetails.forEach((details) => {
+      details.addEventListener('toggle', (event) => {
+        const activeDetails = event.target;
+
+        // Update data-details-active attributes
+        allDetails.forEach((details) => {
+          if (details === activeDetails) {
+            details.setAttribute('data-details-active', 'true');
+          } else {
+            details.setAttribute('data-details-active', 'false');
+          }
+        });
+      });
+    });
+  }
+
+  // Update toggle event listeners to handle child and parent details elements
+  function initializeSecondaryNavDetailsListeners() {
+    const secondaryNavDetails = document.querySelectorAll('#secondaryNav details');
+
+    secondaryNavDetails.forEach((details) => {
+      details.addEventListener('toggle', () => {
+        // Set all details elements within #secondaryNav to data-details-active="false"
+        secondaryNavDetails.forEach((otherDetails) => {
+          otherDetails.setAttribute('data-details-active', 'false');
+        });
+
+        // Set the active details element to data-details-active="true" if it is open
+        if (details.open) {
+          details.setAttribute('data-details-active', 'true');
+
+          // If the active details is a child, set #overflowDetails to false
+          if (details.closest('#overflowDetails')) {
+            document.getElementById('overflowDetails').setAttribute('data-details-active', 'false');
+          }
+        }
+      });
+    });
+  }
+
+  // Assign unique data-details-id and manage state for details elements
+  function initializeDetailsManagement() {
+    const allDetails = document.querySelectorAll('#mainNavigation details');
+    const stateArray = [];
+
+    // Assign unique data-details-id to each details element
+    allDetails.forEach((details, index) => {
+      const uniqueId = `details-${index}`;
+      details.setAttribute('data-details-id', uniqueId);
+      stateArray.push({ id: uniqueId, open: false });
+
+      // Add toggle event listener
+      details.addEventListener('toggle', () => {
+        const isOpen = details.open;
+
+        // Update state array
+        stateArray.forEach((state) => {
+          if (state.id === uniqueId) {
+            state.open = isOpen;
+          } else {
+            state.open = false;
+          }
+        });
+
+        // Close all other details elements
+        allDetails.forEach((otherDetails) => {
+          if (otherDetails.getAttribute('data-details-id') !== uniqueId) {
+            otherDetails.removeAttribute('open');
+          }
+        });
+
+        // Remove event listeners from all other details elements
+        document.removeEventListener('click', onClickOutside);
+        document.removeEventListener('keydown', onEscapePress);
+        document.removeEventListener('focusin', onFocusOutside);
+
+        // Add event listeners to the active details element
+        if (isOpen) {
+          document.addEventListener('click', (e) => onClickOutside(e, details));
+          document.addEventListener('keydown', (e) => onEscapePress(e, details));
+          document.addEventListener('focusin', (e) => onFocusOutside(e, details));
+        }
+      });
+    });
+  }
+
+  function onClickOutside(event, activeDetails) {
+    if (!activeDetails.contains(event.target)) {
+      activeDetails.removeAttribute('open');
     }
   }
 
-  function onEscapePress(event) {
-    if (event.key === 'Escape') {
-      overflowDetails.removeAttribute('open');
+  function onEscapePress(event, activeDetails) {
+    if (event.key === 'Escape' && activeDetails.getAttribute('data-details-active') === 'true') {
+      activeDetails.removeAttribute('open');
     }
   }
 
-  function onFocusOutside(event) {
-    if (!overflowDetails.contains(event.target)) {
-      overflowDetails.removeAttribute('open');
+  function onFocusOutside(event, activeDetails) {
+    if (!activeDetails.contains(event.target)) {
+      activeDetails.removeAttribute('open');
     }
   }
 
@@ -286,4 +395,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Run once on DOMContentLoaded too
   setInitialItems();
   handleOverflow();
+  initializeDetailsToggleListeners();
+  initializeSecondaryNavDetailsListeners();
+  initializeDetailsManagement();
 });
