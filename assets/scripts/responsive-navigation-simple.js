@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function updateListItemClass(outerIndex, innerIndex, isVisible) {
-    const navLists = mainNavElem.querySelectorAll('ul[id$="NavList"]');
+    const navLists = mainNavElem.querySelectorAll('.main-navigation-list');
     const list = navLists[outerIndex - 1];
     if (!list) return;
 
