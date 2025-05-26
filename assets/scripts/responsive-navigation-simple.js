@@ -43,8 +43,6 @@ document.addEventListener('DOMContentLoaded', function () {
       // Add event listener to track state changes
       details.addEventListener('toggle', () => {
         detailsConfig[index].open = details.open;
-        console.log(`Details #${index} state changed to ${details.open ? 'open' : 'closed'}`);
-
         document.getElementById('detailsConfig').innerHTML = JSON.stringify(detailsConfig, null, 2);
       });
     });
@@ -204,6 +202,12 @@ document.addEventListener('DOMContentLoaded', function () {
           const clone = item.cloneNode(true);
           clone.setAttribute('data-id', itemId);
           clone.classList.remove('hidden');
+
+          // If clone has .main-navigation-details as a child addClass 'cloned'
+          const details = clone.querySelector('.main-navigation-details');
+          if (details) {
+            details.classList.add('cloned');
+          }
 
           // Append to the correct ul based on the original parent
           if (list.id === 'firstNavList') {

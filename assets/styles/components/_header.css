@@ -38,6 +38,59 @@
       border: 1px solid #efefef75;
       padding: 12px;
 
+      /*
+      * .main-navigation-link & .main-navigation-details placed here they can also exist within 
+      */
+      .main-navigation-link {
+        display: flex;
+        text-wrap-mode: nowrap;
+        color: lightseagreen;
+        text-decoration: none;
+      }
+
+      .main-navigation-details {
+        .main-navigation-link {
+          list-style: none;
+        }
+
+        summary::-webkit-details-marker,
+        summary::marker {
+          display: none;
+        }
+
+        .nav {
+          position: absolute;
+          padding: 12px;
+          border: 1px solid #efefef75;
+          border-radius: 8px;
+          background-color: #000;
+          translate: 0 12px;
+
+          > ul {
+            li {
+              margin-bottom: 8px;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              a {
+                display: block;
+                text-wrap-mode: nowrap;
+              }
+            }
+          }
+        }
+
+        &.cloned {
+          .nav {
+            position: initial;
+            border: none;
+            padding: 0 0 12px 0;
+          }
+        }
+      }
+
       .overflow-details {
         list-style: none;
         padding: 0;
@@ -77,19 +130,18 @@
           z-index: 999;
           min-width: 120px;
 
-          > ul {
-            li {
+          display: grid;
+          grid-auto-flow: row;
+          gap: 8px;
+
+          ul[class^='overflow-'] {
+            .main-navigation-item {
               margin-bottom: 8px;
-
-              &:last-child {
-                margin-bottom: 0;
-              }
-
-              a {
-                display: block;
-                text-wrap-mode: nowrap;
-              }
             }
+
+            /* + ul[class^='overflow-'] {
+              margin-top: 12px;
+            } */
           }
         }
       }
@@ -123,48 +175,6 @@
             &.hidden {
               visibility: hidden;
               opacity: 0;
-            }
-
-            .main-navigation-link {
-              display: flex;
-              text-wrap-mode: nowrap;
-              color: lightseagreen;
-              text-decoration: none;
-            }
-
-            .main-navigation-item-details {
-              .main-navigation-link {
-                list-style: none;
-              }
-
-              summary::-webkit-details-marker,
-              summary::marker {
-                display: none;
-              }
-
-              .nav {
-                position: absolute;
-                padding: 12px;
-                border: 1px solid #efefef75;
-                border-radius: 8px;
-                background-color: #000;
-                translate: 0 12px;
-
-                > ul {
-                  li {
-                    margin-bottom: 8px;
-
-                    &:last-child {
-                      margin-bottom: 0;
-                    }
-
-                    a {
-                      display: block;
-                      text-wrap-mode: nowrap;
-                    }
-                  }
-                }
-              }
             }
           }
         }
