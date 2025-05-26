@@ -1,5 +1,3 @@
-import debounceFunction from './debounceFunction.js';
-
 document.addEventListener('DOMContentLoaded', function () {
   // User congifuration
   const navItemsGap = 12;
@@ -139,6 +137,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const overflowList = document.getElementById('overflowList');
     if (!overflowList) return;
 
+    // Ensure overflowList contains two ul elements
+    let overflowFirstList = overflowList.querySelector('.overflow-first-list');
+    let overflowSecondList = overflowList.querySelector('.overflow-second-list');
+
+    if (!overflowFirstList) {
+      overflowFirstList = document.createElement('ul');
+      overflowFirstList.classList.add('overflow-first-list');
+      overflowList.appendChild(overflowFirstList);
+    }
+
+    if (!overflowSecondList) {
+      overflowSecondList = document.createElement('ul');
+      overflowSecondList.classList.add('overflow-second-list');
+      overflowList.appendChild(overflowSecondList);
+    }
+
     const itemId = `overflow-${outerIndex}-${innerIndex}`;
 
     requestAnimationFrame(() => {
@@ -147,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const existing = overflowList.querySelector(`[data-id="${itemId}"]`);
         if (existing) {
-          overflowList.removeChild(existing);
+          existing.parentElement.removeChild(existing);
         }
       } else {
         item.classList.add('hidden');
@@ -157,17 +171,21 @@ document.addEventListener('DOMContentLoaded', function () {
           clone.setAttribute('data-id', itemId);
           clone.classList.remove('hidden');
 
-          // Optional: add a fade-in class or similar
-          // clone.classList.add('fade-in');
+          // Append to the correct ul based on the original parent
+          if (list.id === 'firstNavList') {
+            overflowFirstList.appendChild(clone);
+          } else if (list.id === 'secondNavList') {
+            overflowSecondList.appendChild(clone);
+          }
 
-          overflowList.insertBefore(clone, overflowList.firstChild);
           requestAnimationFrame(() => {
             clone.classList.add('fade-in-active');
           });
         }
       }
-      // If overflowList has no children, add class hidden to overflowDetails (parent element)
-      if (overflowList.children.length === 0) {
+
+      // If both ul elements in overflowList are empty, add class hidden to overflowDetails
+      if (!overflowFirstList.children.length && !overflowSecondList.children.length) {
         overflowDetails.classList.add('hidden');
       } else {
         overflowDetails.classList.remove('hidden');
@@ -200,8 +218,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
 
-    secondaryNavLeftEdge =
-      Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
+    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
 
     Object.keys(data).forEach((outerKey) => {
       const innerItems = data[outerKey];
@@ -224,8 +241,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
     mainNavElem.style.setProperty('--_secondary-nav-width', `${secondaryNavWidth}px`);
 
-    secondaryNavLeftEdge =
-      Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
+    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - navItemsGap + 2;
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
     const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + navItemsGap;
 

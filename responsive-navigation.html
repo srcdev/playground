@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>title</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="./assets/styles/index.css" />
 
     <style>
@@ -129,22 +129,12 @@
               <ul class="main-navigation__list" id="secondNavList">
                 <li><a href="#">360 Feedback Demo</a></li>
                 <li><a href="#">Joe Bloggs</a></li>
-                <!-- <li>
-                  <details class="expanding-navigation">
-                    <summary>Account</summary>
-                    <ul class="expanding-navigation__list">
-                      <li><a href="#">Settings</a></li>
-                      <li><a href="#">Help</a></li>
-                      <li><a href="#">Logout</a></li>
-                    </ul>
-                  </details>
-                </li> -->
               </ul>
             </nav>
             <nav class="secondary-navigation" id="secondaryNav">
               <details class="expanding-navigation hidden" id="overflowDetails">
                 <summary>V</summary>
-                <ul class="expanding-navigation__list" id="overflowList"></ul>
+                <div class="expanding-navigation__list" id="overflowList"></div>
               </details>
               <ul class="secondary-navigation__list" id="secondaryList">
                 <li><a href="#">=</a></li>
@@ -155,5 +145,5 @@
       </section>
     </main>
   </body>
-  <script src="./assets/scripts/responsive-navigation-new.js" type="module"></script>
+  <script src="./assets/scripts/responsive-navigation-simple.js" type="module"></script>
 </html>
