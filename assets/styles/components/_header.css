@@ -8,6 +8,26 @@
       text-wrap-mode: nowrap;
     }
 
+    details {
+      --_icon-transform: scaleY(1);
+
+      &[open] {
+        --_icon-transform: scaleY(-1);
+      }
+
+      .has-toggle-icon {
+        display: flex;
+        gap: 6px;
+        text-wrap-mode: nowrap;
+
+        .icon {
+          display: block;
+          transform: var(--_icon-transform);
+          transition: transform 0.2s ease-in-out;
+        }
+      }
+    }
+
     .navigation {
       display: grid;
       grid-template-areas: 'navStack';
@@ -37,7 +57,6 @@
           text-align: right;
           list-style: none;
           padding-inline: 5px;
-          border: 1px solid #efefef75;
           text-wrap: nowrap;
         }
 
@@ -95,7 +114,7 @@
         .main-navigation-list {
           display: flex;
           flex-wrap: nowrap;
-          gap: 12px;
+          gap: 24px;
 
           .main-navigation-item {
             transition:
@@ -106,18 +125,16 @@
               opacity: 0;
             }
 
-            a {
-              display: block;
+            .main-navigation-link {
+              display: flex;
               text-wrap-mode: nowrap;
+              color: lightseagreen;
+              text-decoration: none;
             }
 
             .main-navigation-item-details {
-              summary {
-                text-align: right;
+              .main-navigation-link {
                 list-style: none;
-                padding-inline: 5px;
-                border: 1px solid #efefef75;
-                text-wrap: nowrap;
               }
 
               summary::-webkit-details-marker,
