@@ -48,8 +48,6 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('detailsConfig').innerHTML = JSON.stringify(detailsConfig, null, 2);
       });
     });
-
-    console.log(`Initialized ${detailsConfig.length} details elements`);
   }
 
   /**
