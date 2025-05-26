@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const list = navLists[outerIndex - 1];
     if (!list) return;
 
-    const listItems = list.querySelectorAll('li');
+    const listItems = list.querySelectorAll('.main-navigation-item');
     const item = listItems[innerIndex - 1];
     if (!item) return;
 
