@@ -29,7 +29,7 @@
             justify-content: space-between;
             gap: 12px;
 
-            .main-navigation__list {
+            .main-navigation-list {
               display: flex;
               flex-wrap: nowrap;
               gap: 12px;
@@ -121,20 +121,32 @@
           <h1><a href="/">Mint 66</a></h1>
           <div class="navigation" id="mainNavigation">
             <nav class="main-navigation" id="mainNav">
-              <ul class="main-navigation__list" id="firstNavList">
-                <li><a href="#">Communicate</a></li>
-                <li><a href="#">Analytics</a></li>
-                <li><a href="#">Feedback</a></li>
+              <ul class="main-navigation-list" id="firstNavList">
+                <li class="main-navigation-item"><a href="#">Communicate</a></li>
+                <li class="main-navigation-item"><a href="#">Analytics</a></li>
+                <li class="main-navigation-item"><a href="#">Feedback</a></li>
               </ul>
-              <ul class="main-navigation__list" id="secondNavList">
-                <li><a href="#">360 Feedback Demo</a></li>
-                <li><a href="#">Joe Bloggs</a></li>
+              <ul class="main-navigation-list" id="secondNavList">
+                <li class="main-navigation-item"><a href="#">360 Feedback Demo</a></li>
+                <li class="main-navigation-item"><a href="#">Joe Bloggs</a></li>
+                <li class="main-navigation-item">
+                  <details class="main-navigation-item-details">
+                    <summary>Account</summary>
+                    <div class="nav">
+                      <ul>
+                        <li><a href="#">Settings</a></li>
+                        <li><a href="#">Help</a></li>
+                        <li><a href="#">Logout</a></li>
+                      </ul>
+                    </div>
+                  </details>
+                </li>
               </ul>
             </nav>
             <nav class="secondary-navigation" id="secondaryNav">
-              <details class="expanding-navigation hidden" id="overflowDetails">
+              <details class="overflow-details hidden" id="overflowDetails">
                 <summary>V</summary>
-                <div class="expanding-navigation__list" id="overflowList"></div>
+                <div class="overflow-details-nav" id="overflowList"></div>
               </details>
               <ul class="secondary-navigation__list" id="secondaryList">
                 <li><a href="#">=</a></li>

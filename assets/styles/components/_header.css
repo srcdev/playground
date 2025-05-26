@@ -18,7 +18,7 @@
       border: 1px solid #efefef75;
       padding: 12px;
 
-      .expanding-navigation {
+      .overflow-details {
         list-style: none;
         padding: 0;
         margin: 0;
@@ -45,7 +45,7 @@
           display: none;
         }
 
-        .expanding-navigation__list {
+        .overflow-details-nav {
           position: absolute;
           top: 135%;
           right: 0;
@@ -57,16 +57,18 @@
           z-index: 999;
           min-width: 120px;
 
-          li {
-            margin-bottom: 8px;
+          > ul {
+            li {
+              margin-bottom: 8px;
 
-            &:last-child {
-              margin-bottom: 0;
-            }
+              &:last-child {
+                margin-bottom: 0;
+              }
 
-            a {
-              display: block;
-              text-wrap-mode: nowrap;
+              a {
+                display: block;
+                text-wrap-mode: nowrap;
+              }
             }
           }
         }
@@ -89,12 +91,12 @@
 
         outline: 0px solid green;
 
-        .main-navigation__list {
+        .main-navigation-list {
           display: flex;
           flex-wrap: nowrap;
           gap: 12px;
 
-          li {
+          .main-navigation-item {
             transition:
               opacity 0.2s ease-in-out,
               visibility 0.2s ease-in-out;
@@ -106,6 +108,44 @@
             a {
               display: block;
               text-wrap-mode: nowrap;
+            }
+
+            .main-navigation-item-details {
+              summary {
+                text-align: right;
+                list-style: none;
+                padding-inline: 5px;
+                border: 1px solid #efefef75;
+              }
+
+              summary::-webkit-details-marker,
+              summary::marker {
+                display: none;
+              }
+
+              .nav {
+                position: absolute;
+                padding: 12px;
+                border: 1px solid #efefef75;
+                border-radius: 8px;
+                background-color: #000;
+                translate: 0 12px;
+
+                > ul {
+                  li {
+                    margin-bottom: 8px;
+
+                    &:last-child {
+                      margin-bottom: 0;
+                    }
+
+                    a {
+                      display: block;
+                      text-wrap-mode: nowrap;
+                    }
+                  }
+                }
+              }
             }
           }
         }
