@@ -6,7 +6,6 @@ export default defineConfig({
       input: {
         main: './index.html',
         responsiveNavigation: './responsive-navigation.html',
-        responsiveNavigationWithDetails: './responsive-navigation-with-details.html',
       },
     },
   },
