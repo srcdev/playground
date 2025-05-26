@@ -38,6 +38,7 @@
           list-style: none;
           padding-inline: 5px;
           border: 1px solid #efefef75;
+          text-wrap: nowrap;
         }
 
         summary::-webkit-details-marker,
@@ -116,6 +117,7 @@
                 list-style: none;
                 padding-inline: 5px;
                 border: 1px solid #efefef75;
+                text-wrap: nowrap;
               }
 
               summary::-webkit-details-marker,

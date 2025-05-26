@@ -21,10 +21,23 @@
               </ul>
               <ul class="main-navigation-list" id="secondNavList">
                 <li class="main-navigation-item"><a href="#">360 Feedback Demo</a></li>
+
+                <li class="main-navigation-item">
+                  <details class="main-navigation-item-details" name="navigation-group">
+                    <summary>360 Feedback Demo</summary>
+                    <div class="nav">
+                      <ul>
+                        <li><a href="#">View</a></li>
+                        <li><a href="#">Request</a></li>
+                        <li><a href="#">Help</a></li>
+                      </ul>
+                    </div>
+                  </details>
+                </li>
                 <li class="main-navigation-item"><a href="#">Joe Bloggs</a></li>
                 <li class="main-navigation-item">
-                  <details class="main-navigation-item-details">
-                    <summary>Account</summary>
+                  <details class="main-navigation-item-details" name="navigation-group">
+                    <summary>Joe Bloggs</summary>
                     <div class="nav">
                       <ul>
                         <li><a href="#">Settings</a></li>
@@ -37,7 +50,7 @@
               </ul>
             </nav>
             <nav class="secondary-navigation" id="secondaryNav">
-              <details class="overflow-details hidden" id="overflowDetails">
+              <details class="overflow-details hidden" id="overflowDetails" name="overflow-group">
                 <summary>V</summary>
                 <div class="overflow-details-nav" id="overflowList"></div>
               </details>
@@ -47,6 +60,16 @@
             </nav>
           </div>
         </header>
+      </section>
+      <section class="hidden">
+        <div>
+          <h2>Navigation config</h2>
+          <pre id="navigationElementsPositionArray"></pre>
+        </div>
+        <div>
+          <h2>Details config</h2>
+          <pre id="detailsConfig"></pre>
+        </div>
       </section>
     </main>
   </body>

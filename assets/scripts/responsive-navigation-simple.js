@@ -95,13 +95,13 @@ document.addEventListener('DOMContentLoaded', function () {
    * @param {Object} existingPositions The current navigationElementsPositionArray with visibility flags
    */
   function updateNavigationPositions(existingPositions) {
-    const navLists = mainNavigationElem.querySelectorAll('ul[id$="NavList"]');
+    const navLists = mainNavigationElem.querySelectorAll('.main-navigation-list');
 
     navLists.forEach((list, listIndex) => {
       const listId = listIndex + 1;
       const existingList = existingPositions[listId] || {};
 
-      const items = list.querySelectorAll('li');
+      const items = list.querySelectorAll('.main-navigation-item');
 
       items.forEach((item, itemIndex) => {
         const itemId = itemIndex + 1;
@@ -252,6 +252,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize the navigation positions array
     navigationElementsPositionArray = initializeNavigationPositions();
+
+    document.getElementById('navigationElementsPositionArray').innerHTML = JSON.stringify(navigationElementsPositionArray, null, 2);
 
     handleCollapsedState();
     hideOverflowingItemsOnLoad();
