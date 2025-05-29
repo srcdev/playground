@@ -152,13 +152,13 @@
         flex-wrap: nowrap;
         flex-grow: 1;
         justify-content: space-between;
-        gap: 12px;
+        gap: 60px;
 
         &.collapsed {
           justify-content: flex-start;
         }
 
-        margin-inline-end: calc(var(--_secondary-nav-width) + var(--_nav-items-gap));
+        margin-inline-end: calc(var(--_secondary-nav-width) + var(--_gap-for-overflow-details));
         overflow-x: hidden;
 
         outline: 0px solid green;
@@ -166,7 +166,15 @@
         .main-navigation-list {
           display: flex;
           flex-wrap: nowrap;
-          gap: 24px;
+          /* gap: 24px; */
+
+          &:nth-of-type(1) {
+            gap: 60px;
+          }
+
+          &:nth-of-type(2) {
+            gap: 30px;
+          }
 
           .main-navigation-item {
             transition:
