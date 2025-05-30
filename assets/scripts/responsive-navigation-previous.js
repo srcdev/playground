@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
   let navigationElementsPositionArray = {};
   let mainNavBoundryEnd = 0;
 
+  // Where to add overflow items
+  let useInsertBefore = true; // Set to false to use appendChild instead
+
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
   // let previousSecondNavListElemRightEdge = 0;
@@ -204,12 +207,28 @@ document.addEventListener('DOMContentLoaded', function () {
     const list = navLists[outerIndex - 1];
     if (!list) return;
 
-    const listItems = list.querySelectorAll('li');
+    const listItems = list.querySelectorAll('.main-navigation-item');
     const item = listItems[innerIndex - 1];
     if (!item) return;
 
     const overflowList = document.getElementById('overflowList');
     if (!overflowList) return;
+
+    // Ensure overflowList contains two ul elements
+    let overflowFirstList = overflowList.querySelector('.overflow-first-list');
+    let overflowSecondList = overflowList.querySelector('.overflow-second-list');
+
+    if (!overflowFirstList) {
+      overflowFirstList = document.createElement('ul');
+      overflowFirstList.classList.add('overflow-first-list');
+      overflowList.appendChild(overflowFirstList);
+    }
+
+    if (!overflowSecondList) {
+      overflowSecondList = document.createElement('ul');
+      overflowSecondList.classList.add('overflow-second-list');
+      overflowList.appendChild(overflowSecondList);
+    }
 
     const itemId = `overflow-${outerIndex}-${innerIndex}`;
 
@@ -219,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const existing = overflowList.querySelector(`[data-id="${itemId}"]`);
         if (existing) {
-          overflowList.removeChild(existing);
+          existing.parentElement.removeChild(existing);
         }
       } else {
         item.classList.add('hidden');
@@ -229,17 +248,35 @@ document.addEventListener('DOMContentLoaded', function () {
           clone.setAttribute('data-id', itemId);
           clone.classList.remove('hidden');
 
-          // Optional: add a fade-in class or similar
-          // clone.classList.add('fade-in');
+          // If clone has .main-navigation-details as a child addClass 'cloned'
+          const details = clone.querySelector('.main-navigation-details');
+          if (details) {
+            details.classList.add('cloned');
+          }
 
-          overflowList.insertBefore(clone, overflowList.firstChild);
+          // Append to the correct ul based on the original parent
+          if (list.id === 'firstNavList') {
+            if (useInsertBefore) {
+              overflowFirstList.insertBefore(clone, overflowFirstList.firstChild);
+            } else {
+              overflowFirstList.appendChild(clone);
+            }
+          } else if (list.id === 'secondNavList') {
+            if (useInsertBefore) {
+              overflowSecondList.insertBefore(clone, overflowSecondList.firstChild);
+            } else {
+              overflowSecondList.appendChild(clone);
+            }
+          }
+
           requestAnimationFrame(() => {
             clone.classList.add('fade-in-active');
           });
         }
       }
-      // If overflowList has no children, add class hidden to overflowDetails (parent element)
-      if (overflowList.children.length === 0) {
+
+      // If both ul elements in overflowList are empty, add class hidden to overflowDetails
+      if (!overflowFirstList.children.length && !overflowSecondList.children.length) {
         overflowDetails.classList.add('hidden');
       } else {
         overflowDetails.classList.remove('hidden');
