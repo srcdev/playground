@@ -142,6 +142,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (item.visible && item.right > containerRightEdge) {
           item.visible = false;
+
+          // console.log(`hideOverflowingItemsOnLoad() > handleCollapsedState()`);
+
           updateListItemClass(outerKey, innerKey, false);
         }
       }
@@ -164,6 +167,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (item.visible) {
           if (number >= item.left && number <= item.right) {
             item.visible = false;
+
+            // console.log(`isInLastVisibleRange() > handleCollapsedState()`);
             updateListItemClass(outerKey, innerKey, false);
             return true;
           }
@@ -191,6 +196,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!item.visible) {
           if (number > item.right) {
             item.visible = true;
+
+            // console.log(`showIfBeyondFirstHiddenRange() > handleCollapsedState()`);
             updateListItemClass(outerKey, innerKey, true);
             return true;
           }
@@ -285,7 +292,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function handleCollapsedState() {
+    // secondaryNavLeftEdge isn't set yet, so return
+    // if (secondaryNavLeftEdge === 0) return;
+
     mainNavBoundryEnd = returnFinalRightPositionValue();
+
+    // console.log(`mainNavBoundryEnd(${mainNavBoundryEnd}) | secondaryNavLeftEdge(${secondaryNavLeftEdge})`);
 
     if (mainNavBoundryEnd >= secondaryNavLeftEdge) {
       mainNavElem.classList.add('collapsed');
@@ -307,18 +319,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
   let isCollapsing = false;
 
-  function setInitialItems() {
+  async function setInitialItems() {
     mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
 
     // Initialize the navigation positions array
     navigationElementsPositionArray = initializeNavigationPositions();
 
+    // console.log(`setInitialItems() > handleCollapsedState()`);
     handleCollapsedState();
     hideOverflowingItemsOnLoad();
+
+    return;
   }
 
   function handleOverflow() {
     // Update navigation positions to current state
+    // console.log(`handleOverflow() > handleCollapsedState()`);
     handleCollapsedState();
     // navigationElementsPositionArray = initializeNavigationPositions();
     updateNavigationPositions(navigationElementsPositionArray);
@@ -387,7 +403,13 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Run on initial load and resize
-  window.addEventListener('load', handleOverflow);
+  // window.addEventListener('load', handleOverflow);
+  window.addEventListener('load', () => {
+    requestAnimationFrame(() => {
+      // console.log(`window load > handleCollapsedState()`);
+      handleOverflow();
+    });
+  });
 
   // Handle window resize with requestAnimationFrame for performance
   window.addEventListener('resize', () => {
