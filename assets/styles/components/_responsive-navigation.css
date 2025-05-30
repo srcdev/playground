@@ -103,7 +103,7 @@
         &.hidden {
           opacity: 0;
           visibility: hidden;
-          width: 0;
+          /* width: 0; */
         }
 
         summary {
