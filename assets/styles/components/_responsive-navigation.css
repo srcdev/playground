@@ -68,6 +68,8 @@
           background-color: #000;
           translate: 0 12px;
 
+          min-width: var(--_main-navigation-item-width);
+
           > ul {
             li {
               margin-bottom: 8px;

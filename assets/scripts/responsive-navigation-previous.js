@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const overflowDetails = document.getElementById('overflowDetails');
 
   // Initialize with empty structure that will be populated
+  let waitingForDomToSettle = true;
   let navigationElementsPositionArray = {};
   let mainNavBoundryEnd = 0;
 
@@ -64,6 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Get the bounding rectangle for position information
         const rect = item.getBoundingClientRect();
+
+        item.style.setProperty('--_main-navigation-item-width', `${Math.floor(rect.width)}px`);
+        item.style.setProperty('--_main-navigation-item-height', `${Math.floor(rect.height)}px`);
 
         // Store the position data
         positionsMap[listId][itemId] = {
@@ -294,6 +298,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function handleCollapsedState() {
     // secondaryNavLeftEdge isn't set yet, so return
     // if (secondaryNavLeftEdge === 0) return;
+
+    if (waitingForDomToSettle) return;
 
     mainNavBoundryEnd = returnFinalRightPositionValue();
 
