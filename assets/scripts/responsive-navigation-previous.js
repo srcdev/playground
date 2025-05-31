@@ -245,19 +245,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     requestAnimationFrame(() => {
       if (isVisible) {
-        item.classList.remove('hidden');
+        item.classList.remove('visually-hidden');
 
         const existing = overflowList.querySelector(`[data-id="${itemId}"]`);
         if (existing) {
           existing.parentElement.removeChild(existing);
         }
       } else {
-        item.classList.add('hidden');
+        item.classList.add('visually-hidden');
 
         if (!overflowList.querySelector(`[data-id="${itemId}"]`)) {
           const clone = item.cloneNode(true);
           clone.setAttribute('data-id', itemId);
-          clone.classList.remove('hidden');
+          clone.classList.remove('visually-hidden');
 
           // If clone has .main-navigation-details as a child addClass 'cloned'
           const details = clone.querySelector('.main-navigation-details');
@@ -288,9 +288,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       // If both ul elements in overflowList are empty, add class hidden to overflowDetails
       if (!overflowFirstList.children.length && !overflowSecondList.children.length) {
-        overflowDetails.classList.add('hidden');
+        overflowDetails.classList.add('visually-hidden');
       } else {
-        overflowDetails.classList.remove('hidden');
+        overflowDetails.classList.remove('visually-hidden');
       }
     });
   }

@@ -60,7 +60,7 @@
           display: none;
         }
 
-        .nav {
+        .main-navigation-details-sub-nav {
           position: absolute;
           padding: 12px;
           border: 1px solid #efefef75;
@@ -87,7 +87,7 @@
         }
 
         &.cloned {
-          .nav {
+          .main-navigation-details-sub-nav {
             position: initial;
             border: none;
             padding: 0 0 12px 0;
@@ -104,7 +104,7 @@
 
         transition: all 0.2s ease-in-out;
 
-        &.hidden {
+        &.visually-hidden {
           opacity: 0;
           visibility: hidden;
           /* width: 0; */
@@ -184,7 +184,8 @@
             transition:
               opacity 0.2s ease-in-out,
               visibility 0.2s ease-in-out;
-            &.hidden {
+
+            &.visually-hidden {
               visibility: hidden;
               opacity: 0;
             }
