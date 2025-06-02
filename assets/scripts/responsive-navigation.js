@@ -143,14 +143,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
 
-    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
+    const outerKeys = Object.keys(data).sort((a, b) => Number(b) - Number(a)); // Sort in descending order
 
     for (let o = 0; o < outerKeys.length; o++) {
       const outerKey = outerKeys[o];
       const innerItems = data[outerKey];
-      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
+      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(b) - Number(a)); // Sort in descending order
 
-      sleep(10);
+      // sleep(10);
 
       for (let i = 0; i < innerKeys.length; i++) {
         const innerKey = innerKeys[i];
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function () {
           item.visible = false;
           updateListItemClass(outerKey, innerKey, false);
 
-          sleep(10);
+          // sleep(10);
         }
       }
     }
@@ -363,7 +363,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.clear();
     console.log('Window load');
     requestAnimationFrame(() => {
-      sleep(100);
+      // sleep(100);
       console.log('Window load, within requestAnimationFrame');
       handleOverflow();
     });

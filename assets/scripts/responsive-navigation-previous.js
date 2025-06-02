@@ -133,12 +133,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
 
-    const outerKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
+    const outerKeys = Object.keys(data).sort((a, b) => Number(b) - Number(a)); // Sort in descending order
 
     for (let o = 0; o < outerKeys.length; o++) {
       const outerKey = outerKeys[o];
       const innerItems = data[outerKey];
-      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
+      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(b) - Number(a)); // Sort in descending order
 
       for (let i = 0; i < innerKeys.length; i++) {
         const innerKey = innerKeys[i];
