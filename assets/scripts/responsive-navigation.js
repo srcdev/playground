@@ -22,6 +22,11 @@ document.addEventListener('DOMContentLoaded', function () {
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
 
+  // Sleep function to delay execution
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   /**
    * Initializes tracking for all details elements within mainNavigation
    * Adds data-details-id attribute to each one and tracks open state
@@ -145,6 +150,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const innerItems = data[outerKey];
       const innerKeys = Object.keys(innerItems).sort((a, b) => Number(a) - Number(b));
 
+      sleep(10);
+
       for (let i = 0; i < innerKeys.length; i++) {
         const innerKey = innerKeys[i];
         const item = innerItems[innerKey];
@@ -152,6 +159,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (item.visible && item.right > containerRightEdge) {
           item.visible = false;
           updateListItemClass(outerKey, innerKey, false);
+
+          sleep(10);
         }
       }
     }
@@ -349,11 +358,22 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   // Run on initial load and resize
-  window.addEventListener('load', handleOverflow);
-
+  // window.addEventListener('load', handleOverflow);
+  window.addEventListener('load', () => {
+    console.clear();
+    console.log('Window load');
+    requestAnimationFrame(() => {
+      sleep(100);
+      console.log('Window load, within requestAnimationFrame');
+      handleOverflow();
+    });
+  });
   // Handle window resize with requestAnimationFrame for performance
   window.addEventListener('resize', () => {
+    console.clear();
+    console.log('Window resized');
     requestAnimationFrame(() => {
+      console.log('Window resized, within requestAnimationFrame, recalculating positions...');
       handleOverflow();
     });
   });
