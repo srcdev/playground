@@ -83,7 +83,9 @@ var ResponsiveNavigation = function () {
       listeners.push([details, 'keydown', onKeyDown]);
     });
 
-    const navLinks = Array.from(mainNavElem.querySelectorAll('.main-navigation-link')).filter((link) => link.tagName.toLowerCase() !== 'summary');
+    const navLinks = Array.from(mainNavElem.querySelectorAll('.main-navigation-link')).filter(
+      (link) => link.tagName.toLowerCase() !== 'summary',
+    );
 
     navLinks.forEach((link) => {
       const handler = () => closeAll();
@@ -187,8 +189,12 @@ var ResponsiveNavigation = function () {
     const overflowList = document.getElementById('overflowList');
     if (!overflowList) return;
 
-    let overflowFirstList = overflowList.querySelector('.overflow-first-list') || createList(overflowList, 'overflow-first-list');
-    let overflowSecondList = overflowList.querySelector('.overflow-second-list') || createList(overflowList, 'overflow-second-list');
+    let overflowFirstList =
+      overflowList.querySelector('.overflow-first-list') ||
+      createList(overflowList, 'overflow-first-list');
+    let overflowSecondList =
+      overflowList.querySelector('.overflow-second-list') ||
+      createList(overflowList, 'overflow-second-list');
 
     const itemId = `overflow-${outerIndex}-${innerIndex}`;
 
@@ -208,7 +214,9 @@ var ResponsiveNavigation = function () {
           if (details) details.classList.add('cloned');
 
           const targetList = list.id === 'firstNavList' ? overflowFirstList : overflowSecondList;
-          useInsertBefore ? targetList.insertBefore(clone, targetList.firstChild) : targetList.appendChild(clone);
+          useInsertBefore
+            ? targetList.insertBefore(clone, targetList.firstChild)
+            : targetList.appendChild(clone);
 
           requestAnimationFrame(() => clone.classList.add('fade-in-active'));
         }
@@ -255,7 +263,8 @@ var ResponsiveNavigation = function () {
 
   function updateVisibilityBasedOnPosition() {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
 
     Object.entries(navigationElementsPositionArray).forEach(([outerKey, items]) => {
       Object.entries(items).forEach(([innerKey, item]) => {
@@ -278,7 +287,10 @@ var ResponsiveNavigation = function () {
   }
 
   function setInitialItems() {
-    mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
+    mainNavigationElem.style.setProperty(
+      '--_gap-for-overflow-details',
+      `${gapForOverflowDetails}px`,
+    );
     navigationElementsPositionArray = initializeNavigationPositions();
     handleCollapsedState();
     hideOverflowingItemsOnLoad();
@@ -292,7 +304,8 @@ var ResponsiveNavigation = function () {
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
     mainNavElem.style.setProperty('--_secondary-nav-width', `${secondaryNavWidth}px`);
 
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
     const overlap = secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
 

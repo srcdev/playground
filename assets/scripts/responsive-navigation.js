@@ -22,11 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
 
-  // Sleep function to delay execution
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   /**
    * Initializes tracking for all details elements within mainNavigation
    * Adds data-details-id attribute to each one and tracks open state
@@ -259,12 +254,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function setInitialItems() {
-    mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
+    mainNavigationElem.style.setProperty(
+      '--_gap-for-overflow-details',
+      `${gapForOverflowDetails}px`,
+    );
 
     // Initialize the navigation positions array
     navigationElementsPositionArray = initializeNavigationPositions();
 
-    document.getElementById('navigationElementsPositionArray').innerHTML = JSON.stringify(navigationElementsPositionArray, null, 2);
+    document.getElementById('navigationElementsPositionArray').innerHTML = JSON.stringify(
+      navigationElementsPositionArray,
+      null,
+      2,
+    );
 
     handleCollapsedState();
     hideOverflowingItemsOnLoad();
@@ -275,7 +277,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
 
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
 
     Object.keys(data).forEach((outerKey) => {
       const innerItems = data[outerKey];
@@ -302,9 +305,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
     mainNavElem.style.setProperty('--_secondary-nav-width', `${secondaryNavWidth}px`);
 
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
-    const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
+    const overlapPosition =
+      secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
 
     // console.log(`overlapPosition: ${overlapPosition}`);
     // console.log(`secondaryNavLeftEdge: ${secondaryNavLeftEdge}`);

@@ -326,7 +326,10 @@ document.addEventListener('DOMContentLoaded', function () {
   let isCollapsing = false;
 
   async function setInitialItems() {
-    mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
+    mainNavigationElem.style.setProperty(
+      '--_gap-for-overflow-details',
+      `${gapForOverflowDetails}px`,
+    );
 
     // Initialize the navigation positions array
     navigationElementsPositionArray = initializeNavigationPositions();
@@ -350,13 +353,15 @@ document.addEventListener('DOMContentLoaded', function () {
     mainNavElem.style.setProperty('--_secondary-nav-width', `${secondaryNavWidth}px`);
 
     // Get position of secondaryNav left edge
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
 
     // Get position of secondNavListElem right edge
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
 
     // Set position when secondaryNav overlaps mainNav
-    const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
+    const overlapPosition =
+      secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
 
     isCollapsing = secondaryNavLeftEdge < previousSecondaryNavLeftEdge;
 

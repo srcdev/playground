@@ -23,11 +23,6 @@ document.addEventListener('DOMContentLoaded', function () {
   // Variables to track positions
   let secondaryNavLeftEdge = 0;
 
-  // Sleep function to delay execution
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
   function useDetailsHoverEvents() {
     const nav = document.querySelector('.main-navigation');
     const allDetails = Array.from(nav.querySelectorAll("details[name='navigation-group']"));
@@ -91,7 +86,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Handle regular nav links (not summary)
-    const navLinks = Array.from(nav.querySelectorAll('.main-navigation-link')).filter((link) => link.tagName.toLowerCase() !== 'summary');
+    const navLinks = Array.from(nav.querySelectorAll('.main-navigation-link')).filter(
+      (link) => link.tagName.toLowerCase() !== 'summary',
+    );
 
     navLinks.forEach((link) => {
       const onHoverOrFocus = () => closeAllDetails();
@@ -372,12 +369,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function setInitialItems() {
-    mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
+    mainNavigationElem.style.setProperty(
+      '--_gap-for-overflow-details',
+      `${gapForOverflowDetails}px`,
+    );
 
     // Initialize the navigation positions array
     navigationElementsPositionArray = initializeNavigationPositions();
 
-    document.getElementById('navigationElementsPositionArray').innerHTML = JSON.stringify(navigationElementsPositionArray, null, 2);
+    document.getElementById('navigationElementsPositionArray').innerHTML = JSON.stringify(
+      navigationElementsPositionArray,
+      null,
+      2,
+    );
 
     handleCollapsedState();
     hideOverflowingItemsOnLoad();
@@ -388,7 +392,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
 
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
 
     Object.keys(data).forEach((outerKey) => {
       const innerItems = data[outerKey];
@@ -415,9 +420,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const secondaryNavWidth = Math.floor(secondaryNavElem.getBoundingClientRect().width);
     mainNavElem.style.setProperty('--_secondary-nav-width', `${secondaryNavWidth}px`);
 
-    secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
+    secondaryNavLeftEdge =
+      Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
-    const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
+    const overlapPosition =
+      secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
 
     // console.log(`overlapPosition: ${overlapPosition}`);
     // console.log(`secondaryNavLeftEdge: ${secondaryNavLeftEdge}`);
