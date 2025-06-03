@@ -17,7 +17,16 @@
               <ul class="main-navigation-list" id="firstNavList">
                 <li class="main-navigation-item"><a class="main-navigation-link" href="#">Communicate</a></li>
                 <li class="main-navigation-item"><a class="main-navigation-link" href="#">Analytics</a></li>
-                <li class="main-navigation-item"><a class="main-navigation-link" href="#">Feedback</a></li>
+                <li class="main-navigation-item">
+                  <details class="main-navigation-details" name="navigation-group">
+                    <summary class="main-navigation-link has-toggle-icon"><span class="icon">V</span>Feedback (Simon)</summary>
+                    <div class="main-navigation-details-sub-nav">
+                      <ul>
+                        <li><a href="#">Feedback (Jane)</a></li>
+                      </ul>
+                    </div>
+                  </details>
+                </li>
               </ul>
               <ul class="main-navigation-list" id="secondNavList">
                 <li class="main-navigation-item">
@@ -72,5 +81,5 @@
       </section>
     </main>
   </body>
-  <script src="./assets/scripts/responsive-navigation.js" type="module"></script>
+  <script src="./assets/scripts/responsive-navigation-with-details-hover-events.js" type="module"></script>
 </html>
