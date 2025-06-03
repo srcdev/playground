@@ -33,18 +33,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const allDetails = Array.from(nav.querySelectorAll("details[name='navigation-group']"));
     const listeners = [];
 
-    const openOnlyThis = (targetDetails) => {
-      allDetails.forEach((d) => {
-        if (d !== targetDetails) {
-          d.removeAttribute('open');
+    // Combined handler for details actions
+    function handleDetailsAction(action, targetDetails) {
+      switch (action) {
+        case 'openOnlyThis':
+          allDetails.forEach((d) => {
+            if (d !== targetDetails) {
+              d.removeAttribute('open');
+            }
+          });
+          targetDetails.setAttribute('open', '');
+          break;
+        case 'closeAll':
+          allDetails.forEach((d) => d.removeAttribute('open'));
+          break;
+        case 'closeIfFocusOut':
+          targetDetails.removeAttribute('open');
+          break;
+        case 'escape': {
+          targetDetails.removeAttribute('open');
+          const summary = targetDetails.querySelector('summary');
+          if (summary) summary.focus();
+          break;
         }
-      });
-      targetDetails.setAttribute('open', '');
-    };
-
-    const closeAllDetails = () => {
-      allDetails.forEach((d) => d.removeAttribute('open'));
-    };
+        default:
+          break;
+      }
+    }
 
     allDetails.forEach((details) => {
       const summary = details.querySelector('summary');
@@ -53,17 +68,16 @@ document.addEventListener('DOMContentLoaded', function () {
         summary.setAttribute('tabindex', '0');
       }
 
-      const onMouseOver = () => openOnlyThis(details);
-      const onFocus = () => openOnlyThis(details);
+      const onMouseOver = () => handleDetailsAction('openOnlyThis', details);
+      const onFocus = () => handleDetailsAction('openOnlyThis', details);
       const onFocusOut = (e) => {
         if (!details.contains(e.relatedTarget)) {
-          details.removeAttribute('open');
+          handleDetailsAction('closeIfFocusOut', details);
         }
       };
       const onKeyDown = (e) => {
         if (e.key === 'Escape') {
-          details.removeAttribute('open');
-          summary.focus();
+          handleDetailsAction('escape', details);
         }
       };
 
@@ -94,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const navLinks = Array.from(nav.querySelectorAll('.main-navigation-link')).filter((link) => link.tagName.toLowerCase() !== 'summary');
 
     navLinks.forEach((link) => {
-      const onHoverOrFocus = () => closeAllDetails();
+      const onHoverOrFocus = () => handleDetailsAction('closeAll');
 
       link.addEventListener('mouseover', onHoverOrFocus);
       link.addEventListener('focus', onHoverOrFocus);
@@ -111,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close when clicking or touching outside the entire nav
     const onClickOrTouchOutside = (event) => {
       if (!nav.contains(event.target)) {
-        closeAllDetails();
+        handleDetailsAction('closeAll');
       }
     };
 
@@ -473,11 +487,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // Run on initial load and resize
   // window.addEventListener('load', handleOverflow);
   window.addEventListener('load', () => {
-    console.clear();
-    console.log('Window load');
     requestAnimationFrame(() => {
-      // sleep(100);
-      console.log('Window load, within requestAnimationFrame');
       handleOverflow();
 
       if (trackDetailsHoverEvents) useDetailsHoverEvents();
@@ -494,10 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Handle window resize with requestAnimationFrame for performance
   window.addEventListener('resize', () => {
-    console.clear();
-    console.log('Window resized');
     requestAnimationFrame(() => {
-      console.log('Window resized, within requestAnimationFrame, recalculating positions...');
       handleOverflow();
     });
   });
