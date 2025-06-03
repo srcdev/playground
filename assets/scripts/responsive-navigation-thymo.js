@@ -1,92 +1,73 @@
 var ResponsiveNavigation = function () {
-  // document.addEventListener('DOMContentLoaded', function () {
-
   console.log('Thymo Responsive Navigation Script Loaded');
 
-  // User congifuration
+  // Configuration
   const gapForOverflowDetails = 12;
-  const minDesktopWidth = 768; // Minimum width for desktop view
+  const minDesktopWidth = 768;
+  const trackDetailsHoverEvents = true;
 
-  // Get all required elements by ID
+  // Elements
   const mainNavigationElem = document.getElementById('mainNavigation');
   const mainNavElem = document.getElementById('mainNav');
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
   const overflowDetails = document.getElementById('overflowDetails');
 
-  // Array to track all details elements and their states
-  let detailsConfig = [];
-  const trackDetailsHoverEvents = true; // Set to false to disable hover events on details elements
-
-  // Where to add overflow items
-  let useInsertBefore = true; // Set to false to use appendChild instead
-
-  // Initialize with empty structure that will be populated
   let navigationElementsPositionArray = {};
-  let mainNavBoundryEnd = 0;
-
-  // Variables to track positions
   let secondaryNavLeftEdge = 0;
+  let mainNavBoundryEnd = 0;
+  let useInsertBefore = true;
+  let detailsConfig = [];
+  let cleanupDetailsListeners = null;
 
-  // Sleep function to delay execution
+  // Utils
   function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
-  // Function to get all details elements in the main navigation and add or remove the 'open' attribute based on paarmeters
-  function toggleDetailsElements() {
-    const forceOpen = minDesktopWidth >= window.innerWidth;
-    // console.log(`toggleDetailsElements called, minDesktopWidth: ${minDesktopWidth}, window.innerWidth: ${window.innerWidth} isOpen: ${forceOpen}`);
-
-    const detailsElements = mainNavElem.querySelectorAll('details');
-
-    detailsElements.forEach((details) => {
-      if (forceOpen) {
-        details.removeAttribute('name');
-        details.setAttribute('open', '');
-      } else {
-        details.removeAttribute('open');
-        details.setAttribute('name', 'navigation-group');
-      }
-    });
+  function isDesktop() {
+    return window.innerWidth >= minDesktopWidth;
   }
 
-  function useDetailsHoverEvents() {
-    const nav = mainNavElem;
-    const allDetails = Array.from(nav.querySelectorAll('details'));
+  function applyDetailsMode() {
+    const detailsElements = mainNavElem.querySelectorAll('details');
+
+    if (!isDesktop()) {
+      // Mobile/tablet view: force all open
+      detailsElements.forEach((d) => {
+        d.removeAttribute('name');
+        d.setAttribute('open', '');
+      });
+      cleanupDetailsListeners?.();
+      return;
+    }
+
+    // Desktop: use hover/focus events
+    detailsElements.forEach((d) => d.removeAttribute('open'));
+    cleanupDetailsListeners?.();
+    cleanupDetailsListeners = setupDetailsHoverHandlers(detailsElements);
+  }
+
+  function setupDetailsHoverHandlers(detailsElements) {
     const listeners = [];
 
-    const openOnlyThis = (targetDetails) => {
-      allDetails.forEach((d) => {
-        if (d !== targetDetails) {
-          d.removeAttribute('open');
-        }
-      });
-      targetDetails.setAttribute('open', '');
+    const openOnlyThis = (target) => {
+      detailsElements.forEach((d) => d !== target && d.removeAttribute('open'));
+      target.setAttribute('open', '');
     };
 
-    const closeAllDetails = () => {
-      allDetails.forEach((d) => d.removeAttribute('open'));
-    };
+    const closeAll = () => detailsElements.forEach((d) => d.removeAttribute('open'));
 
-    const openAllDetails = () => {
-      allDetails.removeAttribute('name');
-      allDetails.forEach((d) => d.setAttribute('open', ''));
-    };
-
-    allDetails.forEach((details) => {
+    detailsElements.forEach((details) => {
       const summary = details.querySelector('summary');
+      if (!summary) return;
 
-      if (!summary.hasAttribute('tabindex')) {
-        summary.setAttribute('tabindex', '0');
-      }
+      summary.setAttribute('tabindex', '0');
 
       const onMouseOver = () => openOnlyThis(details);
       const onFocus = () => openOnlyThis(details);
       const onFocusOut = (e) => {
-        if (!details.contains(e.relatedTarget)) {
-          details.removeAttribute('open');
-        }
+        if (!details.contains(e.relatedTarget)) details.removeAttribute('open');
       };
       const onKeyDown = (e) => {
         if (e.key === 'Escape') {
@@ -100,126 +81,66 @@ var ResponsiveNavigation = function () {
       details.addEventListener('focusout', onFocusOut);
       details.addEventListener('keydown', onKeyDown);
 
-      listeners.push(
-        {
-          element: summary,
-          events: [
-            { type: 'mouseover', handler: onMouseOver },
-            { type: 'focus', handler: onFocus },
-          ],
-        },
-        {
-          element: details,
-          events: [
-            { type: 'focusout', handler: onFocusOut },
-            { type: 'keydown', handler: onKeyDown },
-          ],
-        },
-      );
+      listeners.push([summary, 'mouseover', onMouseOver]);
+      listeners.push([summary, 'focus', onFocus]);
+      listeners.push([details, 'focusout', onFocusOut]);
+      listeners.push([details, 'keydown', onKeyDown]);
     });
 
-    // Handle regular nav links (not summary)
-    const navLinks = Array.from(nav.querySelectorAll('.main-navigation-link')).filter((link) => link.tagName.toLowerCase() !== 'summary');
+    const navLinks = Array.from(mainNavElem.querySelectorAll('.main-navigation-link')).filter((link) => link.tagName.toLowerCase() !== 'summary');
 
     navLinks.forEach((link) => {
-      const onHoverOrFocus = () => closeAllDetails();
-
-      link.addEventListener('mouseover', onHoverOrFocus);
-      link.addEventListener('focus', onHoverOrFocus);
-
-      listeners.push({
-        element: link,
-        events: [
-          { type: 'mouseover', handler: onHoverOrFocus },
-          { type: 'focus', handler: onHoverOrFocus },
-        ],
-      });
+      const handler = () => closeAll();
+      link.addEventListener('mouseover', handler);
+      link.addEventListener('focus', handler);
+      listeners.push([link, 'mouseover', handler]);
+      listeners.push([link, 'focus', handler]);
     });
 
-    // Close when clicking or touching outside the entire nav
-    const onClickOrTouchOutside = (event) => {
-      if (!nav.contains(event.target)) {
-        closeAllDetails();
-      }
+    const outsideHandler = (e) => {
+      if (!mainNavElem.contains(e.target)) closeAll();
     };
 
-    document.addEventListener('click', onClickOrTouchOutside);
-    document.addEventListener('touchstart', onClickOrTouchOutside);
+    document.addEventListener('click', outsideHandler);
+    document.addEventListener('touchstart', outsideHandler);
+    listeners.push([document, 'click', outsideHandler]);
+    listeners.push([document, 'touchstart', outsideHandler]);
 
-    listeners.push({
-      element: document,
-      events: [
-        { type: 'click', handler: onClickOrTouchOutside },
-        { type: 'touchstart', handler: onClickOrTouchOutside },
-      ],
-    });
-
-    // Return cleanup function
     return () => {
-      listeners.forEach(({ element, events }) => {
-        events.forEach(({ type, handler }) => {
-          element.removeEventListener(type, handler);
-        });
-      });
+      listeners.forEach(([el, type, fn]) => el.removeEventListener(type, fn));
     };
   }
 
-  // Call this to cleanup navigation details listeners
-  // This will remove all event listeners added by useDetailsHoverEvents
-  // const cleanupNavigation = useDetailsHoverEvents();
-
-  /**
-   * Initializes tracking for all details elements within mainNavigation
-   * Adds data-details-id attribute to each one and tracks open state
-   */
   function initializeDetailsElements() {
     const detailsElements = mainNavigationElem.querySelectorAll('details');
 
     detailsElements.forEach((details, index) => {
-      // Add data-details-id attribute
       details.setAttribute('data-details-id', index);
-
-      // Add to tracking array with initial state
       detailsConfig.push({
         id: index,
         element: details,
         open: details.hasAttribute('open'),
       });
 
-      // Add event listener to track state changes
       details.addEventListener('toggle', () => {
         detailsConfig[index].open = details.open;
       });
     });
   }
 
-  /**
-   * Initializes the navigationElementsPositionArray with the current positions of all list items
-   * @returns {Object} Updated navigationElementsPositionArray with current positions
-   */
   function initializeNavigationPositions() {
-    // Get all navigation lists in the main navigation
     const navLists = mainNavigationElem.querySelectorAll('.main-navigation-list');
     const positionsMap = {};
 
-    // Loop through each navigation list
     navLists.forEach((list, listIndex) => {
-      // Create an entry for this list using 1-based indexing to match existing structure
       const listId = listIndex + 1;
       positionsMap[listId] = {};
-
-      // Get all list items
       const items = list.querySelectorAll('.main-navigation-item');
 
-      // Loop through each item in the list
       items.forEach((item, itemIndex) => {
-        // Use 1-based indexing to match existing structure
         const itemId = itemIndex + 1;
-
-        // Get the bounding rectangle for position information
         const rect = item.getBoundingClientRect();
 
-        // Store the position data
         positionsMap[listId][itemId] = {
           left: Math.floor(rect.left),
           right: Math.floor(rect.right),
@@ -231,79 +152,28 @@ var ResponsiveNavigation = function () {
     return positionsMap;
   }
 
-  /**
-   * Updates the left/right positions in navigationElementsPositionArray while preserving visibility
-   * @param {Object} existingPositions The current navigationElementsPositionArray with visibility flags
-   */
   function updateNavigationPositions(existingPositions) {
     const navLists = mainNavigationElem.querySelectorAll('.main-navigation-list');
 
     navLists.forEach((list, listIndex) => {
       const listId = listIndex + 1;
       const existingList = existingPositions[listId] || {};
-
       const items = list.querySelectorAll('.main-navigation-item');
 
       items.forEach((item, itemIndex) => {
         const itemId = itemIndex + 1;
         const rect = item.getBoundingClientRect();
+        const visible = existingList[itemId]?.visible ?? true;
 
-        if (!existingPositions[listId]) {
-          existingPositions[listId] = {};
-        }
-
-        // Preserve visibility if it already exists, otherwise default to true
-        const existingItem = existingList[itemId];
-        const visible = existingItem?.visible ?? true;
+        if (!existingPositions[listId]) existingPositions[listId] = {};
 
         existingPositions[listId][itemId] = {
           left: Math.floor(rect.left),
           right: Math.floor(rect.right),
-          visible: visible,
+          visible,
         };
       });
     });
-  }
-
-  function returnFinalRightPositionValue() {
-    const data = navigationElementsPositionArray;
-    // Get the last top-level key
-    const outerKeys = Object.keys(data);
-    const lastOuterKey = outerKeys[outerKeys.length - 1];
-
-    // Get the last nested key inside the last top-level key
-    const innerKeys = Object.keys(data[lastOuterKey]);
-    const lastInnerKey = innerKeys[innerKeys.length - 1];
-
-    // Get the 'right' value
-    return data[lastOuterKey][lastInnerKey].right;
-  }
-
-  function hideOverflowingItemsOnLoad() {
-    const containerRightEdge = mainNavElem.getBoundingClientRect().right;
-    const data = navigationElementsPositionArray;
-
-    const outerKeys = Object.keys(data).sort((a, b) => Number(b) - Number(a)); // Sort in descending order
-
-    for (let o = 0; o < outerKeys.length; o++) {
-      const outerKey = outerKeys[o];
-      const innerItems = data[outerKey];
-      const innerKeys = Object.keys(innerItems).sort((a, b) => Number(b) - Number(a)); // Sort in descending order
-
-      // sleep(10);
-
-      for (let i = 0; i < innerKeys.length; i++) {
-        const innerKey = innerKeys[i];
-        const item = innerItems[innerKey];
-
-        if (item.visible && item.right > containerRightEdge) {
-          item.visible = false;
-          updateListItemClass(outerKey, innerKey, false);
-
-          // sleep(10);
-        }
-      }
-    }
   }
 
   function updateListItemClass(outerIndex, innerIndex, isVisible) {
@@ -318,107 +188,78 @@ var ResponsiveNavigation = function () {
     const overflowList = document.getElementById('overflowList');
     if (!overflowList) return;
 
-    // Ensure overflowList contains two ul elements
-    let overflowFirstList = overflowList.querySelector('.overflow-first-list');
-    let overflowSecondList = overflowList.querySelector('.overflow-second-list');
-
-    if (!overflowFirstList) {
-      overflowFirstList = document.createElement('ul');
-      overflowFirstList.classList.add('overflow-first-list');
-      overflowList.appendChild(overflowFirstList);
-    }
-
-    if (!overflowSecondList) {
-      overflowSecondList = document.createElement('ul');
-      overflowSecondList.classList.add('overflow-second-list');
-      overflowList.appendChild(overflowSecondList);
-    }
+    let overflowFirstList = overflowList.querySelector('.overflow-first-list') || createList(overflowList, 'overflow-first-list');
+    let overflowSecondList = overflowList.querySelector('.overflow-second-list') || createList(overflowList, 'overflow-second-list');
 
     const itemId = `overflow-${outerIndex}-${innerIndex}`;
 
     requestAnimationFrame(() => {
       if (isVisible) {
         item.classList.remove('visually-hidden');
-
         const existing = overflowList.querySelector(`[data-id="${itemId}"]`);
-        if (existing) {
-          existing.parentElement.removeChild(existing);
-        }
+        if (existing) existing.remove();
       } else {
         item.classList.add('visually-hidden');
-
         if (!overflowList.querySelector(`[data-id="${itemId}"]`)) {
           const clone = item.cloneNode(true);
           clone.setAttribute('data-id', itemId);
           clone.classList.remove('visually-hidden');
 
-          // If clone has .main-navigation-details as a child addClass 'cloned'
           const details = clone.querySelector('.main-navigation-details');
-          if (details) {
-            details.classList.add('cloned');
-          }
+          if (details) details.classList.add('cloned');
 
-          // Append to the correct ul based on the original parent
-          if (list.id === 'firstNavList') {
-            if (useInsertBefore) {
-              overflowFirstList.insertBefore(clone, overflowFirstList.firstChild);
-            } else {
-              overflowFirstList.appendChild(clone);
-            }
-          } else if (list.id === 'secondNavList') {
-            if (useInsertBefore) {
-              overflowSecondList.insertBefore(clone, overflowSecondList.firstChild);
-            } else {
-              overflowSecondList.appendChild(clone);
-            }
-          }
+          const targetList = list.id === 'firstNavList' ? overflowFirstList : overflowSecondList;
+          useInsertBefore ? targetList.insertBefore(clone, targetList.firstChild) : targetList.appendChild(clone);
 
-          requestAnimationFrame(() => {
-            clone.classList.add('fade-in-active');
-          });
+          requestAnimationFrame(() => clone.classList.add('fade-in-active'));
         }
       }
 
-      // If both ul elements in overflowList are empty, add class visually-hidden to overflowDetails
-      if (!overflowFirstList.children.length && !overflowSecondList.children.length) {
-        overflowDetails.classList.add('visually-hidden');
-      } else {
-        overflowDetails.classList.remove('visually-hidden');
-      }
+      const hasOverflow = overflowFirstList.children.length || overflowSecondList.children.length;
+      overflowDetails.classList.toggle('visually-hidden', !hasOverflow);
     });
   }
 
-  function handleCollapsedState() {
-    mainNavBoundryEnd = returnFinalRightPositionValue();
-
-    if (mainNavBoundryEnd >= secondaryNavLeftEdge) {
-      mainNavElem.classList.add('collapsed');
-    } else {
-      mainNavElem.classList.remove('collapsed');
-    }
+  function createList(parent, className) {
+    const ul = document.createElement('ul');
+    ul.classList.add(className);
+    parent.appendChild(ul);
+    return ul;
   }
 
-  function setInitialItems() {
-    mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
-
-    // Initialize the navigation positions array
-    navigationElementsPositionArray = initializeNavigationPositions();
-
-    handleCollapsedState();
-    hideOverflowingItemsOnLoad();
+  function returnFinalRightPositionValue() {
+    const data = navigationElementsPositionArray;
+    const outerKeys = Object.keys(data);
+    const lastOuter = data[outerKeys[outerKeys.length - 1]];
+    const lastInnerKey = Object.keys(lastOuter).pop();
+    return lastOuter[lastInnerKey].right;
   }
 
-  // Consolidate visibility logic into a single function
-  function updateVisibilityBasedOnPosition() {
+  function hideOverflowingItemsOnLoad() {
     const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     const data = navigationElementsPositionArray;
 
+    Object.keys(data)
+      .sort((a, b) => b - a)
+      .forEach((outerKey) => {
+        Object.keys(data[outerKey])
+          .sort((a, b) => b - a)
+          .forEach((innerKey) => {
+            const item = data[outerKey][innerKey];
+            if (item.visible && item.right > containerRightEdge) {
+              item.visible = false;
+              updateListItemClass(outerKey, innerKey, false);
+            }
+          });
+      });
+  }
+
+  function updateVisibilityBasedOnPosition() {
+    const containerRightEdge = mainNavElem.getBoundingClientRect().right;
     secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
 
-    Object.keys(data).forEach((outerKey) => {
-      const innerItems = data[outerKey];
-      Object.keys(innerItems).forEach((innerKey) => {
-        const item = innerItems[innerKey];
+    Object.entries(navigationElementsPositionArray).forEach(([outerKey, items]) => {
+      Object.entries(items).forEach(([innerKey, item]) => {
         const isVisible = item.right <= containerRightEdge;
         if (item.visible !== isVisible) {
           item.visible = isVisible;
@@ -428,13 +269,24 @@ var ResponsiveNavigation = function () {
     });
   }
 
-  // Optimize handleOverflow to reduce redundant calculations
-  function handleOverflow() {
-    // console.clear();
-    // console.log('navigationElementsPositionArray');
-    // console.log(navigationElementsPositionArray);
+  function handleCollapsedState() {
+    mainNavBoundryEnd = returnFinalRightPositionValue();
+    if (mainNavBoundryEnd >= secondaryNavLeftEdge) {
+      mainNavElem.classList.add('collapsed');
+    } else {
+      mainNavElem.classList.remove('collapsed');
+    }
+  }
 
-    toggleDetailsElements();
+  function setInitialItems() {
+    mainNavigationElem.style.setProperty('--_gap-for-overflow-details', `${gapForOverflowDetails}px`);
+    navigationElementsPositionArray = initializeNavigationPositions();
+    handleCollapsedState();
+    hideOverflowingItemsOnLoad();
+  }
+
+  function handleOverflow() {
+    applyDetailsMode();
     updateNavigationPositions(navigationElementsPositionArray);
     updateVisibilityBasedOnPosition();
 
@@ -443,78 +295,33 @@ var ResponsiveNavigation = function () {
 
     secondaryNavLeftEdge = Math.floor(secondaryNavElem.getBoundingClientRect().left) - gapForOverflowDetails + 2;
     const secondNavListElemRightEdge = Math.floor(secondNavListElem.getBoundingClientRect().right);
-    const overlapPosition = secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
+    const overlap = secondaryNavLeftEdge - secondNavListElemRightEdge + gapForOverflowDetails;
 
-    // console.log(`overlapPosition: ${overlapPosition}`);
-    // console.log(`secondaryNavLeftEdge: ${secondaryNavLeftEdge}`);
-    // console.log(`secondNavListElemRightEdge: ${secondNavListElemRightEdge}`);
-    // console.log(`mainNavBoundryEnd: ${mainNavBoundryEnd}`);
-
-    // console.log(`secondaryNavWidth: ${secondaryNavWidth}`);
-
-    if (overlapPosition < 0) {
-      mainNavElem.classList.add('collapsed');
-    } else {
-      mainNavElem.classList.remove('collapsed');
-    }
+    mainNavElem.classList.toggle('collapsed', overlap < 0);
   }
 
-  // Handle overflow nav details toggle
   if (overflowDetails) {
     overflowDetails.addEventListener('toggle', () => {
+      const toggleListeners = ['click', 'keydown', 'focusin'];
       if (overflowDetails.open) {
-        document.addEventListener('click', onClickOutside);
-        document.addEventListener('keydown', onEscapePress);
-        document.addEventListener('focusin', onFocusOutside);
+        toggleListeners.forEach((evt) => document.addEventListener(evt, outsideNavHandler));
       } else {
-        removeAllListeners();
+        toggleListeners.forEach((evt) => document.removeEventListener(evt, outsideNavHandler));
       }
     });
   }
 
-  function onClickOutside(event) {
-    if (!overflowDetails.contains(event.target)) {
+  function outsideNavHandler(e) {
+    if (!overflowDetails.contains(e.target) || e.key === 'Escape') {
       overflowDetails.removeAttribute('open');
     }
   }
 
-  function onEscapePress(event) {
-    if (event.key === 'Escape') {
-      overflowDetails.removeAttribute('open');
-    }
-  }
-
-  function onFocusOutside(event) {
-    if (!overflowDetails.contains(event.target)) {
-      overflowDetails.removeAttribute('open');
-    }
-  }
-
-  function removeAllListeners() {
-    document.removeEventListener('click', onClickOutside);
-    document.removeEventListener('keydown', onEscapePress);
-    document.removeEventListener('focusin', onFocusOutside);
-  }
-
-  // Run on initial load and resize
-  // window.addEventListener('load', handleOverflow);
-
-  // Handle window resize with requestAnimationFrame for performance
-  window.addEventListener('resize', () => {
-    requestAnimationFrame(() => {
-      handleOverflow();
-    });
-  });
-
-  // Run once on DOMContentLoaded too
+  // Initialization
+  window.addEventListener('resize', () => requestAnimationFrame(handleOverflow));
   setInitialItems();
   handleOverflow();
-
-  // Initialize details elements tracking
-  if (trackDetailsHoverEvents) useDetailsHoverEvents();
   initializeDetailsElements();
 };
 
-window.addEventListener('load', () => {
-  ResponsiveNavigation();
-});
+window.addEventListener('load', ResponsiveNavigation);
