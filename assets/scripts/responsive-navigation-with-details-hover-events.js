@@ -33,33 +33,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const allDetails = Array.from(nav.querySelectorAll("details[name='navigation-group']"));
     const listeners = [];
 
-    // Combined handler for details actions
-    function handleDetailsAction(action, targetDetails) {
-      switch (action) {
-        case 'openOnlyThis':
-          allDetails.forEach((d) => {
-            if (d !== targetDetails) {
-              d.removeAttribute('open');
-            }
-          });
-          targetDetails.setAttribute('open', '');
-          break;
-        case 'closeAll':
-          allDetails.forEach((d) => d.removeAttribute('open'));
-          break;
-        case 'closeIfFocusOut':
-          targetDetails.removeAttribute('open');
-          break;
-        case 'escape': {
-          targetDetails.removeAttribute('open');
-          const summary = targetDetails.querySelector('summary');
-          if (summary) summary.focus();
-          break;
+    const openOnlyThis = (targetDetails) => {
+      allDetails.forEach((d) => {
+        if (d !== targetDetails) {
+          d.removeAttribute('open');
         }
-        default:
-          break;
-      }
-    }
+      });
+      targetDetails.setAttribute('open', '');
+    };
+
+    const closeAllDetails = () => {
+      allDetails.forEach((d) => d.removeAttribute('open'));
+    };
 
     allDetails.forEach((details) => {
       const summary = details.querySelector('summary');
@@ -68,16 +53,17 @@ document.addEventListener('DOMContentLoaded', function () {
         summary.setAttribute('tabindex', '0');
       }
 
-      const onMouseOver = () => handleDetailsAction('openOnlyThis', details);
-      const onFocus = () => handleDetailsAction('openOnlyThis', details);
+      const onMouseOver = () => openOnlyThis(details);
+      const onFocus = () => openOnlyThis(details);
       const onFocusOut = (e) => {
         if (!details.contains(e.relatedTarget)) {
-          handleDetailsAction('closeIfFocusOut', details);
+          details.removeAttribute('open');
         }
       };
       const onKeyDown = (e) => {
         if (e.key === 'Escape') {
-          handleDetailsAction('escape', details);
+          details.removeAttribute('open');
+          summary.focus();
         }
       };
 
@@ -108,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const navLinks = Array.from(nav.querySelectorAll('.main-navigation-link')).filter((link) => link.tagName.toLowerCase() !== 'summary');
 
     navLinks.forEach((link) => {
-      const onHoverOrFocus = () => handleDetailsAction('closeAll');
+      const onHoverOrFocus = () => closeAllDetails();
 
       link.addEventListener('mouseover', onHoverOrFocus);
       link.addEventListener('focus', onHoverOrFocus);
@@ -125,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Close when clicking or touching outside the entire nav
     const onClickOrTouchOutside = (event) => {
       if (!nav.contains(event.target)) {
-        handleDetailsAction('closeAll');
+        closeAllDetails();
       }
     };
 
@@ -489,7 +475,6 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('load', () => {
     requestAnimationFrame(() => {
       handleOverflow();
-
       if (trackDetailsHoverEvents) useDetailsHoverEvents();
     });
   });
