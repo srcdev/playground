@@ -4,7 +4,6 @@ var ResponsiveNavigation = function () {
   // Configuration
   const gapForOverflowDetails = 12;
   const minDesktopWidth = 768;
-  const trackDetailsHoverEvents = true;
 
   // Elements
   const mainNavigationElem = document.getElementById('mainNavigation');
@@ -19,11 +18,6 @@ var ResponsiveNavigation = function () {
   let useInsertBefore = true;
   let detailsConfig = [];
   let cleanupDetailsListeners = null;
-
-  // Utils
-  function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
 
   function isDesktop() {
     return window.innerWidth >= minDesktopWidth;
@@ -45,13 +39,15 @@ var ResponsiveNavigation = function () {
     // Desktop: use hover/focus events
     detailsElements.forEach((d) => d.removeAttribute('open'));
     cleanupDetailsListeners?.();
-    cleanupDetailsListeners = setupDetailsHoverHandlers(detailsElements);
+    cleanupDetailsListeners = setupDetailsHoverHandlers();
   }
 
-  function setupDetailsHoverHandlers(detailsElements) {
+  function setupDetailsHoverHandlers() {
     const listeners = [];
+    const detailsElements = mainNavElem.querySelectorAll('details');
 
     const openOnlyThis = (target) => {
+      if (navigator.maxTouchPoints > 0) return; // skip hover on touch devices
       detailsElements.forEach((d) => d !== target && d.removeAttribute('open'));
       target.setAttribute('open', '');
     };
@@ -98,13 +94,16 @@ var ResponsiveNavigation = function () {
     });
 
     const outsideHandler = (e) => {
-      if (!mainNavElem.contains(e.target)) closeAll();
+      requestAnimationFrame(() => {
+        const openDetails = [...detailsElements].filter((d) => d.hasAttribute('open'));
+        if (openDetails.length && !mainNavElem.contains(e.target)) {
+          closeAll();
+        }
+      });
     };
 
-    document.addEventListener('click', outsideHandler);
-    document.addEventListener('touchstart', outsideHandler);
-    listeners.push([document, 'click', outsideHandler]);
-    listeners.push([document, 'touchstart', outsideHandler]);
+    document.addEventListener('pointerup', outsideHandler);
+    listeners.push([document, 'pointerup', outsideHandler]);
 
     return () => {
       listeners.forEach(([el, type, fn]) => el.removeEventListener(type, fn));
