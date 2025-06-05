@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // User congifuration
-  const gapForOverflowDetails = 12;
-
   // Get all required elements by ID
   const mainNavigationElem = document.getElementById('mainNavigation');
   const mainNavElem = document.getElementById('mainNav');
   const secondNavListElem = document.getElementById('secondNavList');
   const secondaryNavElem = document.getElementById('secondaryNav');
   const overflowDetails = document.getElementById('overflowDetails');
+
+  // User congifuration
+  const gapForOverflowDetails = 12;
 
   // Array to track all details elements and their states
   let detailsConfig = [];

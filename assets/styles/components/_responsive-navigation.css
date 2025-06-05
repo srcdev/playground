@@ -132,7 +132,7 @@
           padding: 12px;
           margin: 0;
           z-index: 999;
-          min-width: 120px;
+          min-width: var(--_overflow-drop-down-width, 120px);
 
           display: grid;
           grid-auto-flow: row;
